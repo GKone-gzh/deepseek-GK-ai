@@ -1,0 +1,54 @@
+{
+  "name": "dsh-agent-cockpit",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "description": "GK协助工作台：多智能体协助的会话级工作台——首次加载插件冲突体检、协作模式（询问/自动/关闭）、预算熔断、本次任务增量成本、编队卡片、历史归档、分工计划；并内置上下文分析引擎。",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./usage": "./host/usage.js",
+    "./family": "./host/family.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "host/usage.js",
+    "host/family.js",
+    "host/state.js",
+    "host/coordination.js",
+    "host/doctor.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "CHANGELOG.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GKone-gzh/deepseek-GK-ai.git"
+  },
+  "homepage": "https://github.com/GKone-gzh/deepseek-GK-ai#readme",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "plugin",
+    "agent-team",
+    "multi-agent",
+    "workbench"
+  ]
+}

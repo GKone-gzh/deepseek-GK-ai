@@ -374,7 +374,7 @@ window.__ModuleLoader__.load({
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.3.0 · 计划商讨 / 插件冲突体检 / 预算熔断 / 历史归档',
+      versionNote: 'GK协助工作台 v1.4.0 · 计划商讨模式 / 插件冲突体检 / 预算熔断 / 历史归档',
     };
 
     const en = {
@@ -550,7 +550,7 @@ window.__ModuleLoader__.load({
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.3.0 · council mode / plugin conflict doctor / budget breaker / archive',
+      versionNote: 'GK Workbench v1.4.0 · council preset / plugin conflict doctor / budget breaker / archive',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */

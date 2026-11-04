@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.3.0-4f7cff" alt="version">
+  <img src="https://img.shields.io/badge/version-1.4.0-4f7cff" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-22c55e" alt="license">
   <img src="https://img.shields.io/badge/tests-13%2F13-22c55e" alt="tests">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20DeepSeek%20Harness-8b5cf6" alt="platform">
@@ -39,6 +39,7 @@ GK协助工作台把这三件事补上：工作台页实时展示编队/任务/�
 | **共享任务板** | 待办 / 进行中 / 已完成，关键路径任务高亮 |
 | **协作模式（询问）** | 默认先问：AI 判断需要协作时必须先 `ask_user_question` 征得同意；未询问前协作工具被宿主拒绝 |
 | **计划商讨（council）** | 不明确的任务先派 2-3 个 council 子 agent 讨论出方案，展示《实施计划》，确认后一次做到验收、不再中途询问 |
+| **新对话模式预设** | 新对话的模式下拉里直接选「计划商讨模式」，该会话自动进入商讨流程 |
 | **预算熔断** | 按「本次任务」统计，超预算的 running 成员被 `agentTeams.interrupt`，并拒绝继续派活 |
 | **本次任务成本** | 自最近一条人类消息起算的步数 / 输出 / 重读 / 重读倍数 |
 | **历史归档** | 空闲成员一键归档，不再占卡片；可展开恢复 |
@@ -100,6 +101,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
 ### 1. 打开工作台
 
 会话顶部标签：`上下文` / **`GK协助工作台`**（不再有独立「编队」页）。输入框上方只有在该会话确有团队时才出现 `GK协助` 徽章。
+
+### 1b. 新对话直接选「计划商讨模式」
+
+新对话页的 Agent 模式下拉（标准模式 / 计划商讨模式 / 创造模式）里选 **计划商讨模式**，该会话会：
+
+- 用同名系统提示段遮盖默认协作提示，直接注入两阶段协议；
+- 首次组装提示时把该会话协作模式写成 `council`，页头显示「商讨」，`ask_user_question` 被拒；
+- 之后按「商讨 → 你确认 → 一次做到验收」执行。
+
+工作台页头的四态按钮仍然可用；已经开始的会话也可以直接切成「商讨」，效果相同。
 
 ### 2. 协作模式（四态循环）
 

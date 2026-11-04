@@ -37,6 +37,7 @@ const ROUTES = {
   taskcost: '/taskcost',
   state: '/state',
   coorddebug: '/coorddebug',
+  presets: '/presets',
   doctor: '/doctor',
 };
 
@@ -356,6 +357,41 @@ export function apply(ctx) {
             }
             if (current && current.status === 'pending') void maybeOpenDoctorConversation();
             sendJson(res, 200, { at: Date.now(), doctor: current });
+            return;
+          }
+          if (routeName === 'presets') {
+            let presets = [];
+            let inspect = [];
+            let error = '';
+            try {
+              const svc = ctx.get('agentPresets');
+              if (!svc || typeof svc.list !== 'function') {
+                error = 'agentPresets service unavailable';
+              } else {
+                const list = await svc.list();
+                presets = (Array.isArray(list) ? list : []).map((item) => ({
+                  id: item && item.id,
+                  name: item && item.name,
+                  description: item && item.description,
+                  order: item && item.order,
+                }));
+                if (typeof svc.inspectCompositions === 'function') {
+                  try {
+                    const rows = svc.inspectCompositions(ctx);
+                    inspect = (Array.isArray(rows) ? rows : []).map((item) => ({
+                      id: item && (item.id || item.preset),
+                      ok: item && item.ok,
+                      error: item && item.error ? String(item.error) : undefined,
+                    }));
+                  } catch (err) {
+                    inspect = [{ id: '*', ok: false, error: String((err && err.message) || err) }];
+                  }
+                }
+              }
+            } catch (err) {
+              error = String((err && err.message) || err);
+            }
+            sendJson(res, 200, { at: Date.now(), presets, inspect, error });
             return;
           }
           if (routeName === 'coorddebug') {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 (2026-11-04)
+
+- 新增 `preset-council` agent preset：新对话的模式下拉里出现「计划商讨模式」，选中后该会话由 `council-preset` 行注入商讨协议，并把工作台协作模式切到 council。
+- 新增 `council-preset.js`（preset-scoped 行）：同名遮盖默认协作提示，首轮组装时写入 mode=council，宿主 guard 拒绝 `ask_user_question`。
+- 新增诊断接口 `GET /agent-cockpit/presets`（preset 名册 + 组合检查）。
+
 ## 1.3.0 (2026-11-04)
 
 - 新增「计划商讨」协作模式：收到不明确任务后，先派 2-3 个 council 子 agent 从可行方案 / 风险反例 / 实现验收三个角度讨论，合并成《实施计划》展示给用户；用户确认后一次做到验收，不再中途询问。

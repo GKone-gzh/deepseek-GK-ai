@@ -27,7 +27,7 @@ import { getDoctor, getSessionState, normalizeSessionId, setDoctor, setSessionSt
 import { applyDoctorAction, doctorPrompt, scanIfNeeded } from './host/doctor.js';
 
 const ROUTE_PREFIX = '/agent-cockpit';
-const DOCTOR_VERSION = '1.2.0';
+const DOCTOR_VERSION = '1.3.0';
 const ROUTES = {
   usage: '/usage',
   family: '/family',
@@ -385,7 +385,7 @@ export function apply(ctx) {
               }
               const patch = {};
               if (body.mode !== undefined) {
-                patch.mode = body.mode === 'off' ? 'off' : body.mode === 'ask' ? 'ask' : 'auto';
+                patch.mode = body.mode === 'off' ? 'off' : body.mode === 'ask' ? 'ask' : body.mode === 'council' ? 'council' : 'auto';
               }
               if (body.budget !== undefined) patch.budget = body.budget;
               if (body.archived !== undefined) patch.archived = body.archived;

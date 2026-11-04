@@ -46,6 +46,8 @@ const OFF_MODE_PROMPT = '协作模式已关闭（GK协助工作台）：本会�
 
 const ASK_MODE_PROMPT = '协作模式=询问（GK协助工作台）：单 agent 能完成的任务直接做，不要问。只有当你判断任务确实需要多个 agent 协同时，才先用 ask_user_question 向用户确认（说明为什么需要协作、打算派几个 agent、各自负责什么）；用户明确同意后再调用 spawn_teammate 等协作工具。在得到同意之前不要组队。';
 
+const COUNCIL_MODE_PROMPT = '协作模式=计划商讨（GK协助工作台），固定两阶段，不要跳步：\n1) 商讨：收到任务后，先派 2-3 个 council 子 agent（spawn_teammate，名字 council-a / council-b / council-c），分别从「最省事的可行方案」「风险、反例与边界」「实现与验收」三个角度独立给出方案；用 send_message 收集后合并成一份《实施计划》：目标、范围、关键决策与默认假设、步骤、验收标准、风险与回退、预算估计。把计划完整展示给用户，明确写「请确认计划；确认后我会一次做到验收，不再中途询问」，然后结束本轮等待用户回复。\n2) 执行：用户确认后，按计划从第一步做到验收，不调用 ask_user_question、不中途征求许可；遇到不确定处按计划里的默认假设继续；阶段完成更新任务板；最后跑验收并给出结果与证据。除非用户主动打断，否则不要停。\n本模式禁止 ask_user_question（宿主会拒绝）：需要用户决策的内容必须在计划里一次性写清。建议在完全权限（danger-full-access）下使用，避免沙箱拦截导致中断。';
+
 function safe(fn, fallback) {
   try {
     const value = fn();
@@ -96,6 +98,7 @@ export function createCoordinator(ctx) {
     const mode = getMode(root);
     if (mode === 'off') return OFF_MODE_PROMPT;
     if (mode === 'ask') return ASK_MODE_PROMPT;
+    if (mode === 'council') return COUNCIL_MODE_PROMPT;
     return '';
   }
 
@@ -139,18 +142,21 @@ export function createCoordinator(ctx) {
       + '），宿主已中断超预算成员并拒绝继续派活。请在工作台调整或清除预算后再继续。';
   }
 
-  /** 全局 guard：任何 agent 执行协作类工具时都会走到这里。 */
+  /** 全局 guard：协作门禁 + 计划商讨的「禁止中途询问」+ 预算熔断。 */
   function guardExecution(execution) {
     try {
       const agent = execution && execution.agent;
       if (!agent) return undefined;
       const name = String(execution.name || '');
-      if (!COLLAB_SET.has(name)) return undefined;
       const root = rootIdOf(agent);
       if (!root) return undefined;
       const mode = getMode(root);
+      if (mode === 'council' && name === 'ask_user_question') {
+        return '计划商讨模式禁止中途询问（GK协助工作台）：需要用户决定的内容请在《实施计划》里一次性写清，展示后等待用户确认；执行阶段直接做到验收。';
+      }
+      if (!COLLAB_SET.has(name)) return undefined;
       if (mode === 'off') {
-        return '协作模式已关闭（GK协助工作台）：本会话只做单 agent 任务，不组队。要协作请先在工作台把「协作模式」切回询问或自动。';
+        return '协作模式已关闭（GK协助工作台）：本会话只做单 agent 任务，不组队。要协作请先在工作台把「协作模式」切回询问、自动或计划商讨。';
       }
       if (mode === 'ask' && !askedInCurrentTask(root)) {
         return '协作模式=询问（GK协助工作台）：先用 ask_user_question 向用户确认是否开启协作（说明为什么需要、打算派几个 agent、各自负责什么）；用户同意后再调用协作工具。单 agent 能做完就不要问。';
@@ -326,7 +332,7 @@ export function createCoordinator(ctx) {
     },
     debugInfo() {
       return {
-        version: '1.1.1',
+        version: '1.3.0',
         started,
         guardInstalled,
         promptInstalled,

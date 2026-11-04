@@ -39,6 +39,10 @@ const weird = state.getSessionState('session-bbbb');
 expect(weird.mode === 'ask', '非法 mode 归一为默认 ask');
 expect(weird.budget === null, '非法预算归一为 null');
 
+/* 3b) council 模式可持久化 */
+state.setSessionState('session-cccc2', { mode: 'council' });
+expect(state.getSessionState('session-cccc2').mode === 'council', 'council 模式可持久化');
+
 /* 4) 部分更新：只改预算不动模式 */
 state.setSessionState('session-aaaa', { budget: { steps: 80 } });
 const partial = state.getSessionState('session-aaaa');

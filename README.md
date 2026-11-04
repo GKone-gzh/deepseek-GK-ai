@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.2.0-4f7cff" alt="version">
+  <img src="https://img.shields.io/badge/version-1.3.0-4f7cff" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-22c55e" alt="license">
   <img src="https://img.shields.io/badge/tests-13%2F13-22c55e" alt="tests">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20DeepSeek%20Harness-8b5cf6" alt="platform">
@@ -38,6 +38,7 @@ GK协助工作台把这三件事补上：工作台页实时展示编队/任务/�
 | **分工计划** | 按成员列任务，标注关键路径、未分配、阻塞、写范围冲突 |
 | **共享任务板** | 待办 / 进行中 / 已完成，关键路径任务高亮 |
 | **协作模式（询问）** | 默认先问：AI 判断需要协作时必须先 `ask_user_question` 征得同意；未询问前协作工具被宿主拒绝 |
+| **计划商讨（council）** | 不明确的任务先派 2-3 个 council 子 agent 讨论出方案，展示《实施计划》，确认后一次做到验收、不再中途询问 |
 | **预算熔断** | 按「本次任务」统计，超预算的 running 成员被 `agentTeams.interrupt`，并拒绝继续派活 |
 | **本次任务成本** | 自最近一条人类消息起算的步数 / 输出 / 重读 / 重读倍数 |
 | **历史归档** | 空闲成员一键归档，不再占卡片；可展开恢复 |
@@ -100,12 +101,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
 
 会话顶部标签：`上下文` / **`GK协助工作台`**（不再有独立「编队」页）。输入框上方只有在该会话确有团队时才出现 `GK协助` 徽章。
 
-### 2. 协作模式（三态循环）
+### 2. 协作模式（四态循环）
 
-页头按钮 `协作：询问 / 自动 / 关闭`：
+页头按钮 `协作：询问 / 自动 / 商讨 / 关闭`：
 
 - **询问（默认）**：单 Agent 能做的事直接做；AI 判断确实需要协作时，必须先 `ask_user_question` 说明「为什么需要、派几个 agent、各自负责什么」，你同意后才能 `spawn_teammate` / 建任务。宿主按「最近一条人类消息之后是否问过」硬校验，不问就调协作工具会被拒绝。
 - **自动**：模型自己决定，不需要先问。
+- **商讨（council）**：给不明确的任务用。收到任务后先派 2-3 个 council 子 agent，从「最省事的可行方案 / 风险与反例 / 实现与验收」三个角度讨论，合并成《实施计划》（目标、范围、默认假设、步骤、验收标准、风险与回退、预算）展示给你；**你确认后**从第一步做到验收，不再中途询问。宿主在商讨模式拒绝 `ask_user_question`，需要你决定的内容必须一次写进计划。建议开启完全权限，避免执行期被沙箱拦。
 - **关闭**：拒绝全部协作类工具。
 
 模式保存在 `<DSH_HOME>\plugins\dsh-agent-cockpit\state.json`，按根会话隔离；新会话默认 `ask`。
@@ -178,6 +180,8 @@ node packages\dsh-agent-cockpit\test\verify-all.mjs http://127.0.0.1:<port>
 - 自动修复只覆盖已知冲突（dsh-context / 重复包名 / 重复宿主行）；团队工具重复、引擎缺失只报告。
 - 门禁依赖 Agent scope 上的 `tools.guard` / `systemPrompt.section`，DSH 升级后请跑一次 `coordination-test.mjs` 回归。
 - 首次加载的「插件体检」对话会消耗一次模型调用；失败时只保留弹窗。
+- 计划商讨的「不中途询问」由宿主禁用 `ask_user_question` + 提示词约束共同保证；模型仍可能自己提前结束，建议在计划里把验收标准写死。
+- 商讨模式会多花 2-3 个 council 子 agent 的 token；不明确任务才用，小改动用单 Agent 更快。
 - 安装依赖手动目录挂载（本机 pnpm store v10/v11 不一致，官方 `plugin_manager install_bundle` 不可用）。
 
 ## 目录

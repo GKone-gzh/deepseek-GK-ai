@@ -113,6 +113,14 @@ sessionEventHandler({ id: 'lead-1' }, userMsg(6000));
 const denyAsk3 = guard({ agent: agentOf('lead-1'), name: 'spawn_teammate' });
 expect(typeof denyAsk3 === 'string' && denyAsk3.indexOf('ask_user_question') >= 0, 'ask 模式：下一条任务重新要求询问');
 
+/* ── 场景 A3：council 计划商讨 ── */
+state.setSessionState('lead-1', { mode: 'council' });
+expect(textOf().indexOf('计划商讨') >= 0, 'council 模式注入两阶段提示');
+const denyAskQuestion = guard({ agent: agentOf('lead-1'), name: 'ask_user_question' });
+expect(typeof denyAskQuestion === 'string' && denyAskQuestion.indexOf('禁止中途询问') >= 0, 'council 模式禁止中途询问');
+expect(guard({ agent: agentOf('lead-1'), name: 'spawn_teammate' }) === undefined, 'council 模式允许组队商讨');
+expect(guard({ agent: agentOf('lead-1'), name: 'read' }) === undefined, 'council 模式不拦普通工具');
+
 /* ── 场景 B：auto ── */
 state.setSessionState('lead-1', { mode: 'auto' });
 expect(textOf() === '', 'mode=auto 时提示为空（动态生效）');

@@ -117,7 +117,7 @@ function makeReact() {
         if ('mode' in value) {
           return [{
             phase: 'ready',
-            mode: 'ask',
+            mode: 'council',
             budget: { steps: 120, output: 150000 },
             archived: ['session-mate0002'],
             status: { over: true, interruptedCount: 1, since: Date.now() - 60000, totals: { steps: 66, output: 430000 } },

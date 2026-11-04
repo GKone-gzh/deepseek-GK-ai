@@ -143,6 +143,7 @@ window.__ModuleLoader__.load({
 .acp_modeDotAuto{background:var(--dsw-alias-state-success-primary,#10b981)}
 .acp_modeDotOff{background:var(--dsw-alias-label-caption)}
 .acp_modeDotAsk{background:var(--dsw-alias-state-warn-primary,#f59e0b)}
+.acp_modeDotCouncil{background:#8b5cf6}
 .acp_livePill{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;font-size:11px;line-height:17px;color:var(--dsw-alias-label-tertiary);background:var(--dsw-alias-bg-layer-2)}
 .acp_livePillRun{color:var(--dsw-alias-state-success-primary,#10b981);border-color:color-mix(in srgb,var(--dsw-alias-state-success-primary,#10b981) 45%,transparent)}
 .acp_liveDot{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-caption)}
@@ -347,8 +348,10 @@ window.__ModuleLoader__.load({
       taskCostLoading: '正在统计本次任务…',
       modeAuto: '协作：自动',
       modeAsk: '协作：询问',
+      modeCouncil: '协作：商讨',
       modeOff: '协作：关闭',
-      modeHint: '询问 = 模型觉得需要协作时先问你，同意后才组队（默认）；自动 = 模型自己决定；关闭 = 拒绝全部协作类工具。',
+      modeHint: '询问 = 模型觉得需要协作时先问你（默认）；自动 = 模型自己决定；商讨 = 先派多个子 agent 讨论出方案，你确认后一次做到验收、不再中途询问；关闭 = 拒绝全部协作类工具。',
+      councilBanner: '计划商讨模式：AI 会先派 council 子 agent 讨论方案，展示《实施计划》等你确认；确认后从第一步做到验收，不再中途询问。建议开启完全权限。',
       interruptedMembers: '个成员已被中断',
       budgetHostHint: '预算由宿主保存并执行：超预算会真的中断成员，不只是提示。',
       close: '关闭',
@@ -371,7 +374,7 @@ window.__ModuleLoader__.load({
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.2.0 · 协作询问 / 插件冲突体检 / 预算熔断 / 历史归档',
+      versionNote: 'GK协助工作台 v1.3.0 · 计划商讨 / 插件冲突体检 / 预算熔断 / 历史归档',
     };
 
     const en = {
@@ -521,8 +524,10 @@ window.__ModuleLoader__.load({
       taskCostLoading: 'Measuring the current task…',
       modeAuto: 'Sync: auto',
       modeAsk: 'Sync: ask',
+      modeCouncil: 'Sync: council',
       modeOff: 'Sync: off',
-      modeHint: 'Ask = the model proposes collaboration and waits for your OK (default); Auto = the model decides; Off = all collaboration tools rejected.',
+      modeHint: 'Ask = the model proposes and waits for your OK (default); Auto = the model decides; Council = sub-agents debate a plan, then execute end-to-end after your approval; Off = all collaboration tools rejected.',
+      councilBanner: 'Council mode: sub-agents debate a plan first; after you approve, the agent executes end-to-end without asking again. Full permissions recommended.',
       interruptedMembers: 'members interrupted',
       budgetHostHint: 'The budget is stored and enforced host-side: over-budget members are actually interrupted, not just warned.',
       close: 'Close',
@@ -545,7 +550,7 @@ window.__ModuleLoader__.load({
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.2.0 · ask-before-collab / plugin conflict doctor / budget breaker / archive',
+      versionNote: 'GK Workbench v1.3.0 · council mode / plugin conflict doctor / budget breaker / archive',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */
@@ -1811,6 +1816,13 @@ window.__ModuleLoader__.load({
 
       const sections = [];
 
+      if (mode === 'council') {
+        sections.push(h('div', { className: 'acp_notice', key: 'councilBanner', role: 'status' }, [
+          h('span', { className: 'acp_dot', key: 'dot' }),
+          h('span', { key: 'text' }, t('councilBanner')),
+        ]));
+      }
+
       if (doctorState.doctor && doctorState.doctor.status === 'pending' && Array.isArray(doctorState.doctor.conflicts) && doctorState.doctor.conflicts.length > 0) {
         sections.push(h('div', {
           className: 'acp_notice acp_noticeWarn',
@@ -1984,7 +1996,7 @@ window.__ModuleLoader__.load({
           'data-sync-mode': mode,
           onClick: () => {
             if (typeof updateState === 'function') {
-              const next = mode === 'auto' ? 'ask' : mode === 'ask' ? 'off' : 'auto';
+              const next = mode === 'ask' ? 'auto' : mode === 'auto' ? 'council' : mode === 'council' ? 'off' : 'ask';
               updateState({ mode: next });
             }
           },
@@ -1992,10 +2004,11 @@ window.__ModuleLoader__.load({
           h('span', {
             className: mode === 'off'
               ? 'acp_modeDot acp_modeDotOff'
-              : mode === 'ask' ? 'acp_modeDot acp_modeDotAsk' : 'acp_modeDot acp_modeDotAuto',
+              : mode === 'ask' ? 'acp_modeDot acp_modeDotAsk'
+                : mode === 'council' ? 'acp_modeDot acp_modeDotCouncil' : 'acp_modeDot acp_modeDotAuto',
             key: 'dot',
           }),
-          h('span', { key: 'label' }, t(mode === 'off' ? 'modeOff' : mode === 'ask' ? 'modeAsk' : 'modeAuto')),
+          h('span', { key: 'label' }, t(mode === 'off' ? 'modeOff' : mode === 'ask' ? 'modeAsk' : mode === 'council' ? 'modeCouncil' : 'modeAuto')),
         ]),
         h('button', {
           type: 'button',

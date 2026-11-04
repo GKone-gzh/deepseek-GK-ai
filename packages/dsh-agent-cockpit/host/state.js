@@ -85,6 +85,7 @@ export function normalizeSessionId(value) {
 function normalizeMode(value) {
   if (value === 'off') return 'off';
   if (value === 'auto') return 'auto';
+  if (value === 'council') return 'council';
   return 'ask';
 }
 

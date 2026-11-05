@@ -332,7 +332,7 @@ export function createCoordinator(ctx) {
     },
     debugInfo() {
       return {
-        version: '1.6.0',
+        version: '1.6.1',
         started,
         guardInstalled,
         promptInstalled,

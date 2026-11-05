@@ -27,6 +27,7 @@ const agent = (id, name, status, role, steps, output, cacheRead, agoMs, parentId
   current: id === LEAD,
   usage: { steps, tools: Math.round(steps * 1.1), input: 40000, output, cacheRead, cacheWrite: 0, reasoning: 0, errors: 0 },
   mtime: Date.now() - agoMs,
+  duration: Math.max(60_000, steps * 7000),
 });
 
 const agents = mode === 'empty' ? [

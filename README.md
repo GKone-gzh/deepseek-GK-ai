@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.6.0-4f7cff" alt="version">
+  <img src="https://img.shields.io/badge/version-1.6.1-4f7cff" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-22c55e" alt="license">
   <img src="https://img.shields.io/badge/tests-13%2F13-22c55e" alt="tests">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20DeepSeek%20Harness-8b5cf6" alt="platform">
@@ -35,7 +35,7 @@ GK协助工作台把这三件事补上：工作台页实时展示编队/任务/�
 | 能力 | 说明 |
 |---|---|
 | **协作星图** | 按父子关系自动分层的 Agent 网络：节点显示步数/token/当前任务/预算进度，运行态连线高亮，点击节点打开会话 |
-| **上下文地形** | 每个 Agent 一根堆叠柱：input / cacheWrite / cacheRead / output，按总量排序，一眼看出谁在吃上下文 |
+| **上下文用量卡片** | 每个 Agent 一张彩色卡：上下文 token、计量消耗、用时，按消耗排序，8 色渐变，一眼看出谁最贵 |
 | **编队卡片** | 主控 / 队友 / 子 Agent 的状态、职责、当前任务、步数/输出/重读、最后活动；空闲成员默认展开 |
 | **分工计划** | 按成员列任务，标注关键路径、未分配、阻塞、写范围冲突 |
 | **共享任务板** | 待办 / 进行中 / 已完成，关键路径任务高亮 |

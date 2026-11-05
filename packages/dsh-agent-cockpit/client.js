@@ -232,6 +232,25 @@ window.__ModuleLoader__.load({
 .acp_pulseOut{display:block;height:100%;background:linear-gradient(90deg,#4f7cff,#6d8dff)}
 .acp_pulseRead{display:block;height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
 .acp_pulseVal{text-align:right;font-size:10.5px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
+.acp_ctxSection{margin:12px 0 6px}
+.acp_ctxHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.acp_ctxTitle{font-size:13px;font-weight:650}
+.acp_ctxBadges{display:flex;gap:6px;flex-wrap:wrap}
+.acp_ctxBadge{padding:1px 8px;border-radius:999px;font-size:10.5px;color:var(--dsw-alias-label-secondary);border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2)}
+.acp_ctxBadgeRead{color:#8b5cf6;border-color:rgba(139,92,246,.30);background:rgba(139,92,246,.08)}
+.acp_ctxGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.acp_ctxCard{position:relative;display:flex;flex-direction:column;gap:8px;padding:11px 12px 9px;border:1px solid var(--dsw-alias-border-l2);border-left:3px solid var(--ctx-accent,#4f7cff);border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);overflow:hidden}
+.acp_ctxCardHead{display:flex;align-items:center;gap:6px;min-width:0}
+.acp_ctxDot{flex:none;width:7px;height:7px;border-radius:999px;background:var(--ctx-accent,#4f7cff)}
+.acp_ctxName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:650}
+.acp_ctxRole{flex:none;margin-left:auto;padding:0 6px;border-radius:999px;font-size:9.5px;line-height:15px;color:var(--ctx-accent,#4f7cff);background:color-mix(in srgb,var(--ctx-accent,#4f7cff) 12%,transparent)}
+.acp_ctxMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.acp_ctxMetric{display:flex;flex-direction:column;gap:1px;min-width:0}
+.acp_ctxLabel{font-size:10px;color:var(--dsw-alias-label-tertiary)}
+.acp_ctxValue{font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acp_ctxBar{height:4px;border-radius:999px;background:var(--dsw-alias-border-l1);overflow:hidden}
+.acp_ctxBar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--ctx-accent,#4f7cff),color-mix(in srgb,var(--ctx-accent,#4f7cff) 45%,#fff))}
+.acp_ctxFoot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--dsw-alias-label-tertiary)}
 .acp_terrain{margin:12px 0 6px;padding:14px 16px 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:16px;background:radial-gradient(circle at 85% 0%,rgba(139,92,246,.10),transparent 50%),var(--dsw-alias-bg-layer-1)}
 .acp_terrainHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .acp_terrainTitle{font-size:13px;font-weight:650}
@@ -333,6 +352,12 @@ window.__ModuleLoader__.load({
       pulseTitle: '上下文脉搏',
       pulseHint: '只统计上下文重读与产出：紫色是重读，蓝色是输出；条越长越吃上下文。',
       pulsePressure: '重读占比',
+      ctxTitle: '上下文用量',
+      ctxHint: '每个 Agent 一张卡：用了多少上下文、消耗多少 token、跑了多久；颜色越靠前消耗越大。',
+      ctxUsed: '上下文',
+      ctxConsumed: '消耗',
+      ctxDuration: '用时',
+      ctxReread: '重读',
       terrainTitle: '上下文地形',
       terrainHint: '每根柱子是一个 Agent 的上下文构成，按总量从高到低；柱顶数字是计量 token。',
       terrainLegendRead: '重读',
@@ -435,7 +460,7 @@ window.__ModuleLoader__.load({
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.6.0 · 协作星图 / 上下文地形 / 计划商讨 / 预算熔断',
+      versionNote: 'GK协助工作台 v1.6.1 · 协作星图 / 上下文用量 / 计划商讨 / 预算熔断',
     };
 
     const en = {
@@ -521,6 +546,12 @@ window.__ModuleLoader__.load({
       pulseTitle: 'Context pulse',
       pulseHint: 'Cache reread vs output: purple is reread, blue is output. Longer bars burn more context.',
       pulsePressure: 'reread share',
+      ctxTitle: 'Context usage',
+      ctxHint: 'One card per agent: context used, tokens consumed, elapsed time. Hotter colors burn more.',
+      ctxUsed: 'context',
+      ctxConsumed: 'consumed',
+      ctxDuration: 'time',
+      ctxReread: 'reread',
       terrainTitle: 'Context terrain',
       terrainHint: 'One column per agent, sorted by total context tokens.',
       terrainLegendRead: 'reread',
@@ -623,7 +654,7 @@ window.__ModuleLoader__.load({
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.6.0 · collaboration map / context terrain / council preset',
+      versionNote: 'GK Workbench v1.6.1 · collaboration map / context usage / council preset',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */
@@ -1133,6 +1164,89 @@ window.__ModuleLoader__.load({
       return s.slice(0, 2).toUpperCase();
     }
 
+    function fmtDuration(ms) {
+      if (typeof ms !== 'number' || !isFinite(ms) || ms <= 0) return '—';
+      const total = Math.round(ms / 1000);
+      if (total < 60) return total + 's';
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      if (m < 60) return String(m) + 'm' + (s > 0 ? ' ' + s + 's' : '');
+      const h = Math.floor(m / 60);
+      return String(h) + 'h ' + String(m % 60) + 'm';
+    }
+
+    const CONTEXT_PALETTE = ['#4f7cff', '#8b5cf6', '#14b8a6', '#f59e0b', '#ec4899', '#6366f1', '#10b981', '#f97316'];
+
+    function ContextCards(props) {
+      const t = props.t;
+      const rows = Array.isArray(props.rows) ? props.rows : [];
+      if (rows.length === 0) return null;
+      const list = rows.map((row) => {
+        const u = row.usage || {};
+        const input = Number(u.input) || 0;
+        const read = Number(u.cacheRead) || 0;
+        const write = Number(u.cacheWrite) || 0;
+        const output = Number(u.output) || 0;
+        const context = input + read + write;
+        const total = context + output;
+        return { row, input, read, write, output, context, total };
+      }).sort((a, b) => b.total - a.total);
+      const sumTotal = list.reduce((s, x) => s + x.total, 0);
+      const sumRead = list.reduce((s, x) => s + x.read, 0);
+      const pressure = sumTotal > 0 ? Math.round((sumRead / sumTotal) * 100) : 0;
+      const maxTotal = Math.max(1, ...list.map((x) => x.total));
+      const cards = list.map((x, index) => {
+        const accent = CONTEXT_PALETTE[index % CONTEXT_PALETTE.length];
+        const share = Math.max(2, Math.round((x.total / maxTotal) * 100));
+        return h('article', {
+          className: 'acp_ctxCard',
+          key: String(x.row.id),
+          style: {
+            '--ctx-accent': accent,
+            background: 'linear-gradient(135deg, ' + accent + '18, transparent 58%), var(--dsw-alias-bg-layer-1)',
+          },
+        }, [
+          h('div', { className: 'acp_ctxCardHead', key: 'head' }, [
+            h('span', { className: 'acp_ctxDot', key: 'dot' }),
+            h('span', { className: 'acp_ctxName', key: 'name', title: String(x.row.name) }, String(x.row.name)),
+            h('span', { className: 'acp_ctxRole', key: 'role' }, String(x.row.role || 'agent')),
+          ]),
+          h('div', { className: 'acp_ctxMetrics', key: 'metrics' }, [
+            h('div', { className: 'acp_ctxMetric', key: 'ctx' }, [
+              h('span', { className: 'acp_ctxLabel', key: 'l' }, t('ctxUsed')),
+              h('b', { className: 'acp_ctxValue', key: 'v' }, fmtTokens(x.context)),
+            ]),
+            h('div', { className: 'acp_ctxMetric', key: 'total' }, [
+              h('span', { className: 'acp_ctxLabel', key: 'l' }, t('ctxConsumed')),
+              h('b', { className: 'acp_ctxValue', key: 'v' }, fmtTokens(x.total)),
+            ]),
+            h('div', { className: 'acp_ctxMetric', key: 'time' }, [
+              h('span', { className: 'acp_ctxLabel', key: 'l' }, t('ctxDuration')),
+              h('b', { className: 'acp_ctxValue', key: 'v' }, fmtDuration(x.row.duration)),
+            ]),
+          ]),
+          h('div', { className: 'acp_ctxBar', key: 'bar' }, h('i', { style: { width: share + '%' } })),
+          h('div', { className: 'acp_ctxFoot', key: 'foot' }, [
+            h('span', { key: 'steps' }, String(Number((x.row.usage || {}).steps) || 0) + ' 步'),
+            h('span', { key: 'read' }, t('ctxReread') + ' ' + (x.total > 0 ? Math.round((x.read / x.total) * 100) : 0) + '%'),
+          ]),
+        ]);
+      });
+      return h('div', { className: 'acp_ctxSection', key: 'context-cards', id: 'acp-context-cards' }, [
+        h('div', { className: 'acp_ctxHead', key: 'head' }, [
+          h('div', { key: 'left' }, [
+            h('div', { className: 'acp_ctxTitle', key: 'title' }, t('ctxTitle')),
+            h('p', { className: 'acp_hint', key: 'hint', style: { margin: '2px 0 0' } }, t('ctxHint')),
+          ]),
+          h('div', { className: 'acp_ctxBadges', key: 'badges' }, [
+            h('span', { className: 'acp_ctxBadge', key: 'total' }, fmtTokens(sumTotal) + ' total'),
+            h('span', { className: 'acp_ctxBadge acp_ctxBadgeRead', key: 'read' }, String(pressure) + '% ' + t('pulsePressure')),
+          ]),
+        ]),
+        h('div', { className: 'acp_ctxGrid', key: 'grid' }, cards),
+      ]);
+    }
+
     function AgentGraph(props) {
       const t = props.t;
       const rows = Array.isArray(props.rows) ? props.rows : [];
@@ -1318,7 +1432,7 @@ window.__ModuleLoader__.load({
           sessionId: props.sessionId,
           openMember: props.openMember,
         }));
-        body.push(h(ContextTerrain, { key: 'terrain', rows: visibleRows, t }));
+        body.push(h(ContextCards, { key: 'context-cards', rows: visibleRows, t }));
         if (active.length > 0) {
           body.push(h('div', { className: 'acp_grid', key: 'active' }, active.map(card)));
         }
@@ -2309,7 +2423,7 @@ window.__ModuleLoader__.load({
           title: t('contextTitle'),
           onClick: () => {
             if (typeof document !== 'undefined' && document.getElementById) {
-              const node = document.getElementById('acp-context-terrain');
+              const node = document.getElementById('acp-context-cards');
               if (node && typeof node.scrollIntoView === 'function') node.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           },

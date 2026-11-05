@@ -55,6 +55,57 @@ function addUsage(acc, usage) {
   acc.reasoning += pick(usage.reasoningTokens);
 }
 
+function timingFromEvents(events) {
+  let firstAt;
+  let lastAt;
+  for (const event of events || []) {
+    if (!event || typeof event.time !== 'number') continue;
+    if (firstAt === undefined || event.time < firstAt) firstAt = event.time;
+    if (lastAt === undefined || event.time > lastAt) lastAt = event.time;
+  }
+  return { firstAt, lastAt };
+}
+
+function timingFromLogText(text) {
+  let firstAt;
+  let lastAt;
+  for (const line of String(text).split('\n')) {
+    if (!line) continue;
+    let event;
+    try {
+      event = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    if (!event || typeof event.time !== 'number') continue;
+    if (firstAt === undefined || event.time < firstAt) firstAt = event.time;
+    if (lastAt === undefined || event.time > lastAt) lastAt = event.time;
+  }
+  return { firstAt, lastAt };
+}
+
+function durationFallback(createdAt, mtime, birthtime) {
+  if (typeof mtime !== 'number') return undefined;
+  let start = NaN;
+  if (typeof createdAt === 'number') start = createdAt;
+  else if (typeof createdAt === 'string') start = Date.parse(createdAt);
+  if (!isFinite(start) && typeof birthtime === 'number') start = birthtime;
+  if (!isFinite(start)) return undefined;
+  const delta = mtime - start;
+  return delta > 0 ? delta : undefined;
+}
+
+function withTiming(result, timing) {
+  const firstAt = timing && typeof timing.firstAt === 'number' ? timing.firstAt : undefined;
+  const lastAt = timing && typeof timing.lastAt === 'number' ? timing.lastAt : undefined;
+  return {
+    ...result,
+    firstAt,
+    lastAt,
+    duration: firstAt !== undefined && lastAt !== undefined ? Math.max(0, lastAt - firstAt) : undefined,
+  };
+}
+
 export function emptyUsage() {
   return { ...EMPTY };
 }
@@ -173,7 +224,7 @@ export function sessionUsage(sessionId, liveSession) {
       const events = liveSession.ownEvents();
       const usage = usageFromEvents(events);
       const header = liveSession.header || {};
-      return {
+      const timed = withTiming({
         usage,
         source: 'live',
         live: true,
@@ -182,7 +233,9 @@ export function sessionUsage(sessionId, liveSession) {
         title: header.title,
         createdAt: header.createdAt,
         mtime,
-      };
+      }, timingFromEvents(events));
+      if (timed.duration === undefined) timed.duration = durationFallback(header.createdAt, mtime, stat ? stat.birthtimeMs : undefined);
+      return timed;
     } catch {
       /* 回落磁盘 */
     }
@@ -200,14 +253,15 @@ export function sessionUsage(sessionId, liveSession) {
   } catch {
     return { usage: emptyUsage(), source: 'error', live: false, mtime };
   }
-  const value = {
+  const value = withTiming({
     usage: usageFromLogText(text),
     source: 'disk',
     live: false,
     model: lastModelFromText(text),
     createdAt: createdAtFromText(text),
     mtime,
-  };
+  }, timingFromLogText(text));
+  if (value.duration === undefined) value.duration = durationFallback(value.createdAt, mtime, stat ? stat.birthtimeMs : undefined);
   diskCache.set(sessionId, { key, value });
   return value;
 }

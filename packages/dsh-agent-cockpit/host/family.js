@@ -51,6 +51,9 @@ function usageOf(sessions, id) {
   return {
     usage: usage || { steps: 0, tools: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, reasoning: 0, errors: 0 },
     mtime: result && typeof result.mtime === 'number' ? result.mtime : undefined,
+    duration: result && typeof result.duration === 'number' ? result.duration : undefined,
+    firstAt: result && typeof result.firstAt === 'number' ? result.firstAt : undefined,
+    lastAt: result && typeof result.lastAt === 'number' ? result.lastAt : undefined,
     source: result && result.source ? result.source : undefined,
   };
 }
@@ -99,6 +102,9 @@ export async function collectFamily(scope, leadId, currentId) {
       current: id === currentId,
       usage: measured.usage,
       mtime: measured.mtime,
+      duration: measured.duration,
+      firstAt: measured.firstAt,
+      lastAt: measured.lastAt,
       usageSource: measured.source,
     });
   }
@@ -134,6 +140,9 @@ export async function collectFamily(scope, leadId, currentId) {
       current: id === currentId,
       usage: measured.usage,
       mtime: measured.mtime,
+      duration: measured.duration,
+      firstAt: measured.firstAt,
+      lastAt: measured.lastAt,
       usageSource: measured.source,
     });
   };

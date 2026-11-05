@@ -123,7 +123,7 @@ expect(guard({ agent: agentOf('lead-1'), name: 'read' }) === undefined, 'council
 
 /* ── 场景 B：auto ── */
 state.setSessionState('lead-1', { mode: 'auto' });
-expect(textOf() === '', 'mode=auto 时提示为空（动态生效）');
+expect(textOf().indexOf('技术部门') >= 0, 'mode=auto 时注入中文部门命名约定');
 expect(guard({ agent: agentOf('lead-1'), name: 'spawn_teammate' }) === undefined, 'mode=auto 时放行 spawn_teammate');
 
 /* ── 场景 C：预算熔断 ── */

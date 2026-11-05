@@ -44,9 +44,11 @@ const COLLAB_SET = new Set(COLLAB_TOOLS);
 
 const OFF_MODE_PROMPT = '协作模式已关闭（GK协助工作台）：本会话只做单 agent 任务，不要调用 spawn_teammate、send_message、list_agents、wait_agent、interrupt_agent、team_task_*、subagent、subagent_fork、workflow。用户要协作时会在工作台把模式切回询问或自动。';
 
-const ASK_MODE_PROMPT = '协作模式=询问（GK协助工作台）：单 agent 能完成的任务直接做，不要问。只有当你判断任务确实需要多个 agent 协同时，才先用 ask_user_question 向用户确认（说明为什么需要协作、打算派几个 agent、各自负责什么）；用户明确同意后再调用 spawn_teammate 等协作工具。在得到同意之前不要组队。';
+const NAMING_PROMPT = '命名约定（GK协助工作台）：主控对用户显示为「主管」；派队友时用中文部门名，例如 技术部门、图像部门、测试部门、文档部门、数据部门、调研部门。';
 
-const COUNCIL_MODE_PROMPT = '协作模式=计划商讨（GK协助工作台），固定两阶段，不要跳步：\n1) 商讨：收到任务后，先派 2-3 个 council 子 agent（spawn_teammate，名字 council-a / council-b / council-c），分别从「最省事的可行方案」「风险、反例与边界」「实现与验收」三个角度独立给出方案；用 send_message 收集后合并成一份《实施计划》：目标、范围、关键决策与默认假设、步骤、验收标准、风险与回退、预算估计。把计划完整展示给用户，明确写「请确认计划；确认后我会一次做到验收，不再中途询问」，然后结束本轮等待用户回复。\n2) 执行：用户确认后，按计划从第一步做到验收，不调用 ask_user_question、不中途征求许可；遇到不确定处按计划里的默认假设继续；阶段完成更新任务板；最后跑验收并给出结果与证据。除非用户主动打断，否则不要停。\n本模式禁止 ask_user_question（宿主会拒绝）：需要用户决策的内容必须在计划里一次性写清。建议在完全权限（danger-full-access）下使用，避免沙箱拦截导致中断。';
+const ASK_MODE_PROMPT = '协作模式=询问（GK协助工作台）：单 agent 能完成的任务直接做，不要问。只有当你判断任务确实需要多个 agent 协同时，才先用 ask_user_question 向用户确认（说明为什么需要协作、打算派几个 agent、各自负责什么）；用户明确同意后再调用 spawn_teammate 等协作工具。在得到同意之前不要组队。派队友时用中文部门名（技术部门/图像部门/测试部门/文档部门/数据部门/调研部门）。';
+
+const COUNCIL_MODE_PROMPT = '协作模式=计划商讨（GK协助工作台），固定两阶段，不要跳步：\n1) 商讨：收到任务后，先派 2-3 个 council 子 agent（spawn_teammate，名字 council-a / council-b / council-c），分别从「最省事的可行方案」「风险、反例与边界」「实现与验收」三个角度独立给出方案；用 send_message 收集后合并成一份《实施计划》：目标、范围、关键决策与默认假设、步骤、验收标准、风险与回退、预算估计。把计划完整展示给用户，明确写「请确认计划；确认后我会一次做到验收，不再中途询问」，然后结束本轮等待用户回复。\n2) 执行：用户确认后，按计划从第一步做到验收，不调用 ask_user_question、不中途征求许可；遇到不确定处按计划里的默认假设继续；阶段完成更新任务板；最后跑验收并给出结果与证据。除非用户主动打断，否则不要停。\n本模式禁止 ask_user_question（宿主会拒绝）：需要用户决策的内容必须在计划里一次性写清。建议在完全权限（danger-full-access）下使用，避免沙箱拦截导致中断。派 council 成员时用中文部门名（技术部门/图像部门/测试部门等）。';
 
 function safe(fn, fallback) {
   try {
@@ -99,6 +101,7 @@ export function createCoordinator(ctx) {
     if (mode === 'off') return OFF_MODE_PROMPT;
     if (mode === 'ask') return ASK_MODE_PROMPT;
     if (mode === 'council') return COUNCIL_MODE_PROMPT;
+    if (mode === 'auto') return NAMING_PROMPT;
     return '';
   }
 
@@ -332,7 +335,7 @@ export function createCoordinator(ctx) {
     },
     debugInfo() {
       return {
-        version: '1.6.1',
+        version: '1.6.2',
         started,
         guardInstalled,
         promptInstalled,

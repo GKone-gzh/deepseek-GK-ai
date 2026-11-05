@@ -238,23 +238,23 @@ for (const { key, entry } of registrations) {
     console.log('·', name, '| classes', classes.length, '| text', text.slice(0, 120));
     if (key === 'conversation.view') {
       expect(classes.indexOf('acp_onboard') < 0, '团队存在时不显示空状态');
-      expect(text.indexOf('2 statusIdleGroup') >= 0 || text.indexOf('statusIdleGroup (2)') >= 0, '空闲成员数量出现');
+      expect(text.indexOf('空闲成员') >= 0, '空闲成员数量出现');
       expect(text.indexOf('task-3') >= 0 || text.indexOf('验收报告') >= 0, '分工计划列出任务');
-      expect(text.indexOf('criticalBadge') >= 0, '关键路径徽章出现');
-      expect(text.indexOf('planConflict') >= 0, '写范围冲突出现');
-      expect(text.indexOf('1 budgetOver') >= 0 || text.indexOf('budgetOver') >= 0, '超预算提示出现');
-      expect(text.indexOf('colEff') >= 0, '效率表出现');
+      expect(text.indexOf('关键路径') >= 0, '关键路径徽章出现');
+      expect(text.indexOf('写范围冲突') >= 0, '写范围冲突出现');
+      expect(text.indexOf('个成员超出预算') >= 0, '超预算提示出现');
+      expect(text.indexOf('每步输出') >= 0, '效率表出现');
       expect(text.indexOf('game-qa') >= 0, '空闲成员出现在统计/分工里');
-      expect(text.indexOf('modeOff') >= 0 || text.indexOf('modeAuto') >= 0, '协作模式按钮出现');
-      expect(text.indexOf('taskCost') >= 0 && text.indexOf('taskCostHint') >= 0, '本次任务成本区块出现');
+      expect(text.indexOf('协作：关闭') >= 0, '协作模式按钮出现');
+      expect(text.indexOf('本次任务成本') >= 0, '本次任务成本区块出现');
       expect(classes.join(' ').indexOf('acp_modeDot') >= 0, '协作模式状态点渲染');
-      expect(text.indexOf('interruptedMembers') >= 0, '预算熔断中断提示出现');
-      expect(text.indexOf('archivedGroup') >= 0, '已归档分组出现');
-      expect(text.indexOf('archiveIdle') >= 0, '归档空闲成员按钮出现');
-      expect(text.indexOf('restoreArchived') >= 0, '恢复归档按钮出现');
-      expect(text.indexOf('doctorTitle') >= 0, '插件冲突弹窗出现');
-      expect(text.indexOf('doctorFix') >= 0 && text.indexOf('doctorOptout') >= 0, '冲突弹窗含修复/停用按钮');
-      expect(text.indexOf('doctorOpenConversation') >= 0, '冲突弹窗含打开说明对话');
+      expect(text.indexOf('个成员已被中断') >= 0, '预算熔断中断提示出现');
+      expect(text.indexOf('已归档') >= 0, '已归档分组出现');
+      expect(text.indexOf('归档空闲成员') >= 0, '归档空闲成员按钮出现');
+      expect(text.indexOf('恢复归档') >= 0, '恢复归档按钮出现');
+      expect(text.indexOf('插件冲突检查') >= 0, '插件冲突弹窗出现');
+      expect(text.indexOf('自主修复') >= 0 && text.indexOf('不使用我们的插件') >= 0, '冲突弹窗含修复/停用按钮');
+      expect(text.indexOf('打开说明对话') >= 0, '冲突弹窗含打开说明对话');
     }
     if (key === 'conversation.input.dock') {
       expect(text.indexOf('1 statusRunning') >= 0, '徽章只显示运行中的数量');

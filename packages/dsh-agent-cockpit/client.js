@@ -460,7 +460,7 @@ window.__ModuleLoader__.load({
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.6.1 · 协作星图 / 上下文用量 / 计划商讨 / 预算熔断',
+      versionNote: 'GK协助工作台 v1.6.2 · 协作星图 / 上下文用量 / 计划商讨 / 预算熔断',
     };
 
     const en = {
@@ -654,7 +654,7 @@ window.__ModuleLoader__.load({
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.6.1 · collaboration map / context usage / council preset',
+      versionNote: 'GK Workbench v1.6.2 · collaboration map / context usage / council preset',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */
@@ -1041,8 +1041,8 @@ window.__ModuleLoader__.load({
 
       const children = [
         h('div', { className: 'acp_cardTop', key: 'top' }, [
-          h('span', { className: 'acp_avatar' + (isRunningRow(row) ? ' acp_avatarRun' : ''), key: 'avatar' }, initialsOf(row.name)),
-          h('span', { className: 'acp_name', key: 'name', title: row.name }, String(row.name)),
+          h('span', { className: 'acp_avatar' + (isRunningRow(row) ? ' acp_avatarRun' : ''), key: 'avatar' }, initialsOf(props.displayName ? props.displayName(row) : row.name)),
+          h('span', { className: 'acp_name', key: 'name', title: row.name }, String(props.displayName ? props.displayName(row) : row.name)),
           h('span', { className: dotClass(status), key: 'dot' }),
           h('span', { className: 'acp_statusLabel', key: 'status' }, t(statusKey(status))),
         ]),
@@ -1156,6 +1156,46 @@ window.__ModuleLoader__.load({
       ]);
     }
 
+    const DEPARTMENT_RULES = [
+      [/test|qa|verify|验收|测试/i, '测试部门'],
+      [/image|graphic|render|visual|style|presentation|fx|ui|图像|视觉|界面|图片/i, '图像部门'],
+      [/doc|readme|文档/i, '文档部门'],
+      [/data|model|数据/i, '数据部门'],
+      [/research|search|调研/i, '调研部门'],
+    ];
+
+    function departmentBase(row) {
+      if (!row) return '技术部门';
+      if (String(row.role || '') === 'lead') return '主管';
+      const text = String(row.name || '') + ' ' + String(row.description || '');
+      for (const rule of DEPARTMENT_RULES) {
+        if (rule[0].test(text)) return rule[1];
+      }
+      return '技术部门';
+    }
+
+    function departmentNames(rows) {
+      const list = Array.isArray(rows) ? rows : [];
+      const counts = new Map();
+      for (const row of list) {
+        const base = departmentBase(row);
+        counts.set(base, (counts.get(base) || 0) + 1);
+      }
+      const used = new Map();
+      const names = new Map();
+      for (const row of list) {
+        const base = departmentBase(row);
+        let label = base;
+        if (base !== '主管' && (counts.get(base) || 0) > 1) {
+          const n = (used.get(base) || 0) + 1;
+          used.set(base, n);
+          label = base + ' ' + String.fromCharCode(64 + n);
+        }
+        names.set(String(row.id), label);
+      }
+      return names;
+    }
+
     function initialsOf(name) {
       const s = String(name || '').trim();
       if (!s) return 'AI';
@@ -1208,7 +1248,7 @@ window.__ModuleLoader__.load({
         }, [
           h('div', { className: 'acp_ctxCardHead', key: 'head' }, [
             h('span', { className: 'acp_ctxDot', key: 'dot' }),
-            h('span', { className: 'acp_ctxName', key: 'name', title: String(x.row.name) }, String(x.row.name)),
+            h('span', { className: 'acp_ctxName', key: 'name', title: String(x.row.name) }, String(props.displayName ? props.displayName(x.row) : x.row.name)),
             h('span', { className: 'acp_ctxRole', key: 'role' }, String(x.row.role || 'agent')),
           ]),
           h('div', { className: 'acp_ctxMetrics', key: 'metrics' }, [
@@ -1324,7 +1364,7 @@ window.__ModuleLoader__.load({
         }, [
           h('span', { className: 'acp_graphHeadRow', key: 'head' }, [
             h('span', { className: 'acp_graphDot ' + (isRunningRow(r) ? 'acp_dotRun' : 'acp_dotIdle'), key: 'dot' }),
-            h('span', { className: 'acp_graphName', key: 'name' }, String(r.name)),
+            h('span', { className: 'acp_graphName', key: 'name', title: String(r.name) }, String(props.displayName ? props.displayName(r) : r.name)),
             r.role === 'lead' ? h('span', { className: 'acp_graphRole', key: 'role' }, 'LEAD') : null,
           ]),
           h('span', { className: 'acp_graphTask', key: 'task' }, task ? String(task.subject) : (r.description ? String(r.description) : t('noTask'))),
@@ -1400,6 +1440,8 @@ window.__ModuleLoader__.load({
       const hasFamilyRows = rows.length > 0;
       const count = hasFamilyRows ? visibleRows.length : members.length;
       const canArchive = typeof props.onArchive === 'function' && idle.length > 0;
+      const deptNames = departmentNames(visibleRows);
+      const displayNameOf = (row) => deptNames.get(String(row.id)) || String(row.name);
 
       const head = h('div', { className: 'acp_sectionHead', key: 'head' }, [
         h('span', { key: 'title' }, t('agents')),
@@ -1419,6 +1461,7 @@ window.__ModuleLoader__.load({
         budget: props.budget,
         sessionId: props.sessionId,
         parentName: row.parentId !== undefined && row.parentId !== '' ? names.get(String(row.parentId)) : undefined,
+        displayName: displayNameOf,
         openMember: props.openMember,
       });
 
@@ -1429,10 +1472,11 @@ window.__ModuleLoader__.load({
           rows: visibleRows,
           tasks,
           t,
+          displayName: displayNameOf,
           sessionId: props.sessionId,
           openMember: props.openMember,
         }));
-        body.push(h(ContextCards, { key: 'context-cards', rows: visibleRows, t }));
+        body.push(h(ContextCards, { key: 'context-cards', rows: visibleRows, t, displayName: displayNameOf }));
         if (active.length > 0) {
           body.push(h('div', { className: 'acp_grid', key: 'active' }, active.map(card)));
         }
@@ -1914,11 +1958,13 @@ window.__ModuleLoader__.load({
       const tasks = Array.isArray(props.tasks) ? props.tasks : [];
       const rows = Array.isArray(props.rows) ? props.rows : [];
       const members = Array.isArray(props.members) ? props.members : [];
+      const planDept = departmentNames(rows.length > 0 ? rows : members);
       const people = rows.length > 0
-        ? rows.map((row) => ({ id: row.id, name: String(row.name), role: String(row.role || '') }))
+        ? rows.map((row) => ({ id: row.id, realName: String(row.name), name: planDept.get(String(row.id)) || String(row.name), role: String(row.role || '') }))
         : members.map((member, index) => ({
           id: member.id,
-          name: String(member.name !== undefined ? member.name : member.id),
+          realName: String(member.name !== undefined ? member.name : member.id),
+          name: planDept.get(String(member.id)) || String(member.name !== undefined ? member.name : member.id),
           role: String(member.role !== undefined ? member.role : index === 0 ? 'lead' : 'teammate'),
         }));
       const hasTasks = tasks.length > 0;
@@ -1929,7 +1975,7 @@ window.__ModuleLoader__.load({
 
       const roleLabel = (role) => t(role === 'lead' ? 'roleLead' : role === 'subagent' ? 'roleSubagent' : 'roleTeammate');
       const planRows = people.map((person) => {
-        const mine = tasksOfOwner(tasks, person.name)
+        const mine = tasksOfOwner(tasks, person.realName)
           .filter((task) => task.status !== 'deleted')
           .sort((left, right) => {
             const rank = { in_progress: 0, pending: 1, completed: 2 };
@@ -1938,7 +1984,7 @@ window.__ModuleLoader__.load({
         const criticalIds = critical.ids;
         return h('div', { className: 'acp_planRow', key: String(person.id) }, [
           h('div', { key: 'who' }, [
-            h('div', { className: 'acp_planName', key: 'name', title: person.name }, person.name),
+            h('div', { className: 'acp_planName', key: 'name', title: person.realName }, person.name),
             h('div', { className: 'acp_planRole', key: 'role' }, roleLabel(person.role)),
           ]),
           h('div', { className: 'acp_planTasks', key: 'tasks' }, mine.length === 0
@@ -2054,7 +2100,7 @@ window.__ModuleLoader__.load({
       const over = !props.isTotal && overBudgetOf(row, budget);
       const overSteps = !props.isTotal && budget && budget.steps > 0 && steps > budget.steps;
       return h('tr', props.isTotal ? { className: 'acp_totalRow' } : null, [
-        h('td', { key: 'name' }, props.isTotal ? t('costTeam') : costNameOf(row, t)),
+        h('td', { key: 'name', title: row && row.name !== undefined ? String(row.name) : undefined }, props.isTotal ? t('costTeam') : (props.displayName ? props.displayName(row) : costNameOf(row, t))),
         h('td', { key: 'steps', className: overSteps ? 'acp_over' : undefined }, String(steps)),
         h('td', { key: 'output' }, fmtTokens(output)),
         h('td', { key: 'read' }, fmtTokens(read)),
@@ -2092,12 +2138,14 @@ window.__ModuleLoader__.load({
         ? String(overRows.length) + ' ' + t('budgetOver') + ' · ' + t('budgetHostHint')
         : t('costHint');
 
+      const dept = departmentNames(rows);
       const body = rows.map((row) => h(EfficiencyRow, {
         key: String(row.id),
         row,
         t,
         members,
         budget,
+        displayName: (item) => dept.get(String(item.id)) || costNameOf(item, t),
       }));
       body.push(h(EfficiencyRow, {
         key: 'totals',
@@ -2155,8 +2203,35 @@ window.__ModuleLoader__.load({
 
     /* ── the cockpit page ───────────────────────────────────────────────── */
 
+    const LANG_KEY = 'agent-cockpit:lang';
+
+    function readStoredLang() {
+      try {
+        const value = localStorage.getItem(LANG_KEY);
+        return value === 'en' || value === 'zh' ? value : '';
+      } catch (err) {
+        return '';
+      }
+    }
+
+    function writeStoredLang(value) {
+      try {
+        localStorage.setItem(LANG_KEY, value);
+      } catch (err) {
+        /* localStorage may be unavailable; the toggle still works for this render. */
+      }
+    }
+
     function Cockpit(props) {
-      const t = props.t;
+      const hostIsEn = typeof props.t === 'function' && String(props.t('title')) === en.title;
+      const langRef = React.useState(readStoredLang() || (hostIsEn ? 'en' : 'zh'));
+      const lang = langRef[0];
+      const setLang = langRef[1];
+      const table = lang === 'en' ? en : zh;
+      const t = (key) => {
+        if (table && typeof table[key] === 'string') return table[key];
+        return typeof props.t === 'function' ? props.t(key) : key;
+      };
       const useSessions = typeof props.useSessions === 'function' ? props.useSessions : useNoopSelector;
       const useSession = typeof props.useSession === 'function' ? props.useSession : useNoopSelector;
       const useSessionStatus = typeof props.useSessionStatus === 'function' ? props.useSessionStatus : useNoopSelector;
@@ -2441,6 +2516,17 @@ window.__ModuleLoader__.load({
         h('button', {
           type: 'button',
           className: 'acp_action',
+          key: 'lang',
+          title: lang === 'en' ? 'Switch to 中文' : 'Switch to English',
+          onClick: () => {
+            const next = lang === 'en' ? 'zh' : 'en';
+            if (typeof setLang === 'function') setLang(next);
+            writeStoredLang(next);
+          },
+        }, lang === 'en' ? '中文' : 'EN'),
+        h('button', {
+          type: 'button',
+          className: 'acp_action',
           key: 'refresh',
           title: t('refresh'),
           onClick: () => { if (typeof props.refresh === 'function') props.refresh(sessionId); },
@@ -2593,6 +2679,9 @@ window.__ModuleLoader__.load({
           /* Fall through to a locale-independent label. */
         }
         try {
+          const stored = readStoredLang();
+          if (stored === 'en' && typeof en[key] === 'string') return en[key];
+          if (stored === 'zh' && typeof zh[key] === 'string') return zh[key];
           const active = String(ctx.locale.getLocale() || '').toLowerCase();
           if (active.indexOf('zh') === 0 && typeof zh[key] === 'string') return zh[key];
         } catch (err) {

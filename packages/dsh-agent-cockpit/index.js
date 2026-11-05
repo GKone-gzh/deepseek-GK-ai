@@ -138,6 +138,8 @@ export async function openDoctorConversation(ctx, doctor) {
   }
 }
 
+export const inject = ['webServer', 'sessions', 'agents', 'systemPrompt', 'tools'];
+
 export function apply(ctx) {
   let coordinator;
   try {

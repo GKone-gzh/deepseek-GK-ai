@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.4.1-4f7cff" alt="version">
+  <img src="https://img.shields.io/badge/version-1.5.0-4f7cff" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-22c55e" alt="license">
   <img src="https://img.shields.io/badge/tests-13%2F13-22c55e" alt="tests">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20DeepSeek%20Harness-8b5cf6" alt="platform">
@@ -34,7 +34,9 @@ GK协助工作台把这三件事补上：工作台页实时展示编队/任务/�
 
 | 能力 | 说明 |
 |---|---|
-| **编队卡片** | 主控 / 队友 / 子 Agent 的状态、职责、当前任务、步数/输出/重读、最后活动；空闲成员折叠 |
+| **协作星图** | 按父子关系自动分层的 Agent 网络：节点显示步数/token/当前任务/预算进度，运行态连线高亮，点击节点打开会话 |
+| **上下文脉搏** | 按重读量排序的横向频谱：紫色重读、蓝色输出，一眼看出谁在吃上下文 |
+| **编队卡片** | 主控 / 队友 / 子 Agent 的状态、职责、当前任务、步数/输出/重读、最后活动；空闲成员默认展开 |
 | **分工计划** | 按成员列任务，标注关键路径、未分配、阻塞、写范围冲突 |
 | **共享任务板** | 待办 / 进行中 / 已完成，关键路径任务高亮 |
 | **协作模式（询问）** | 默认先问：AI 判断需要协作时必须先 `ask_user_question` 征得同意；未询问前协作工具被宿主拒绝 |

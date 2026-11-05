@@ -199,6 +199,39 @@ window.__ModuleLoader__.load({
 .acp_doctorActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .acp_doctorDanger{border-color:var(--dsw-alias-state-error-primary,#ef4444)!important;color:var(--dsw-alias-state-error-primary,#ef4444)!important}
 .acp_doctorResult{margin-top:10px;font-size:12px;color:var(--dsw-alias-label-secondary)}
+.acp_avatar{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#8b5cf6);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.02em;box-shadow:0 2px 8px rgba(79,124,255,.25)}
+.acp_avatarRun{box-shadow:0 0 0 2px rgba(16,185,129,.28),0 2px 10px rgba(16,185,129,.22)}
+.acp_cardV2{padding:12px 13px;gap:8px;border-radius:12px;background:linear-gradient(180deg,var(--dsw-alias-bg-layer-2),var(--dsw-alias-bg-layer-1))}
+.acp_graph{margin:12px 0 6px;padding:12px 14px 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:16px;overflow-x:auto;overflow-y:hidden;background:radial-gradient(circle at 12% 0%,rgba(79,124,255,.10),transparent 55%),radial-gradient(circle at 92% 100%,rgba(139,92,246,.10),transparent 55%),var(--dsw-alias-bg-layer-1)}
+.acp_graphHead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.acp_graphCanvas{position:relative;margin:10px auto 2px;min-width:100%;overflow:visible}
+.acp_graphSvg{position:absolute;left:0;top:0;pointer-events:none}
+.acp_edge{fill:none;stroke:var(--dsw-alias-border-l2);stroke-width:1.6;opacity:.75}
+.acp_edgeRun{stroke:color-mix(in srgb,var(--dsw-alias-state-success-primary,#10b981) 55%,transparent);stroke-width:2;opacity:.9}
+.acp_graphNode{position:absolute;display:flex;flex-direction:column;gap:4px;padding:9px 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:12px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);text-align:left;font:inherit;cursor:pointer;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.acp_graphNode:hover{transform:translateY(-2px);border-color:var(--dsw-alias-label-caption);box-shadow:0 8px 22px rgba(0,0,0,.10)}
+.acp_graphNodeRun{border-color:color-mix(in srgb,var(--dsw-alias-state-success-primary,#10b981) 45%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--dsw-alias-state-success-primary,#10b981) 14%,transparent),0 4px 16px rgba(16,185,129,.12)}
+.acp_graphNodeCurrent{outline:1px dashed color-mix(in srgb,var(--dsw-alias-label-caption) 60%,transparent);outline-offset:2px}
+.acp_graphHeadRow{display:flex;align-items:center;gap:6px;min-width:0}
+.acp_graphDot{flex:none;width:6px;height:6px;border-radius:999px;background:var(--dsw-alias-label-tertiary)}
+.acp_graphName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:650}
+.acp_graphRole{flex:none;padding:0 5px;border-radius:999px;font-size:9px;line-height:14px;letter-spacing:.06em;color:#4f7cff;border:1px solid rgba(79,124,255,.35);background:rgba(79,124,255,.08)}
+.acp_graphTask{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--dsw-alias-label-tertiary)}
+.acp_graphStats{font-size:10.5px;color:var(--dsw-alias-label-secondary)}
+.acp_graphBar{display:block;height:3px;border-radius:999px;background:var(--dsw-alias-border-l2);overflow:hidden}
+.acp_graphBar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#4f7cff,#8b5cf6)}
+.acp_graphNodeRun .acp_graphBar i{background:linear-gradient(90deg,#10b981,#4f7cff)}
+.acp_pulse{margin:12px 0 6px;padding:12px 14px;border:1px solid var(--dsw-alias-border-l2);border-radius:16px;background:linear-gradient(135deg,rgba(79,124,255,.06),rgba(139,92,246,.06)),var(--dsw-alias-bg-layer-1)}
+.acp_pulseHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.acp_pulseTitle{font-size:12.5px;font-weight:650}
+.acp_pulseBadge{padding:1px 8px;border-radius:999px;font-size:10.5px;color:#8b5cf6;border:1px solid rgba(139,92,246,.30);background:rgba(139,92,246,.08)}
+.acp_pulseList{display:grid;gap:7px;margin-top:8px}
+.acp_pulseRow{display:grid;grid-template-columns:92px minmax(0,1fr) 66px;align-items:center;gap:8px}
+.acp_pulseName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--dsw-alias-label-secondary)}
+.acp_pulseTrack{display:flex;height:8px;border-radius:999px;overflow:hidden;background:var(--dsw-alias-border-l1)}
+.acp_pulseOut{display:block;height:100%;background:linear-gradient(90deg,#4f7cff,#6d8dff)}
+.acp_pulseRead{display:block;height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.acp_pulseVal{text-align:right;font-size:10.5px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
 `;
 
     const zh = {
@@ -279,6 +312,11 @@ window.__ModuleLoader__.load({
       colSum: '合计',
       tabContext: '上下文',
       tabFleet: '编队',
+      graphTitle: '协作星图',
+      graphHint: '点击节点打开该成员会话',
+      pulseTitle: '上下文脉搏',
+      pulseHint: '只统计上下文重读与产出：紫色是重读，蓝色是输出；条越长越吃上下文。',
+      pulsePressure: '重读占比',
       contextTitle: '上下文',
       contextSubtitle: '本会话的上下文压力、构成与逐次调用',
       contextPressure: '上下文压力',
@@ -374,7 +412,7 @@ window.__ModuleLoader__.load({
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.4.0 · 计划商讨模式 / 插件冲突体检 / 预算熔断 / 历史归档',
+      versionNote: 'GK协助工作台 v1.5.0 · 协作星图 / 上下文脉搏 / 计划商讨 / 预算熔断',
     };
 
     const en = {
@@ -455,6 +493,11 @@ window.__ModuleLoader__.load({
       colSum: 'Total',
       tabContext: 'Context',
       tabFleet: 'Fleet',
+      graphTitle: 'Collaboration map',
+      graphHint: 'Click a node to open that member',
+      pulseTitle: 'Context pulse',
+      pulseHint: 'Cache reread vs output: purple is reread, blue is output. Longer bars burn more context.',
+      pulsePressure: 'reread share',
       contextTitle: 'Context',
       contextSubtitle: 'Context pressure, composition, and recent calls for this session',
       contextPressure: 'Context pressure',
@@ -550,7 +593,7 @@ window.__ModuleLoader__.load({
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.4.0 · council preset / plugin conflict doctor / budget breaker / archive',
+      versionNote: 'GK Workbench v1.5.0 · collaboration map / context pulse / council preset',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */
@@ -937,6 +980,7 @@ window.__ModuleLoader__.load({
 
       const children = [
         h('div', { className: 'acp_cardTop', key: 'top' }, [
+          h('span', { className: 'acp_avatar' + (isRunningRow(row) ? ' acp_avatarRun' : ''), key: 'avatar' }, initialsOf(row.name)),
           h('span', { className: 'acp_name', key: 'name', title: row.name }, String(row.name)),
           h('span', { className: dotClass(status), key: 'dot' }),
           h('span', { className: 'acp_statusLabel', key: 'status' }, t(statusKey(status))),
@@ -973,12 +1017,151 @@ window.__ModuleLoader__.load({
 
       return h('button', {
         type: 'button',
-        className: 'acp_card' + (over ? ' acp_cardOver' : '') + (isRunningRow(row) ? ' acp_cardRun' : ''),
+        className: 'acp_card acp_cardV2' + (over ? ' acp_cardOver' : '') + (isRunningRow(row) ? ' acp_cardRun' : ''),
         disabled,
         title: disabled ? undefined : t('open'),
         'data-agent-id': row.id,
         onClick: () => { if (!disabled) props.openMember(props.sessionId, row.id); },
       }, children);
+    }
+
+    function initialsOf(name) {
+      const s = String(name || '').trim();
+      if (!s) return 'AI';
+      const parts = s.split(/[\s_-]+/).filter(Boolean);
+      if (parts.length > 1) return (parts[0].slice(0, 1) + parts[1].slice(0, 1)).toUpperCase();
+      return s.slice(0, 2).toUpperCase();
+    }
+
+    function AgentGraph(props) {
+      const t = props.t;
+      const rows = Array.isArray(props.rows) ? props.rows : [];
+      if (rows.length === 0) return null;
+      const W = 168;
+      const H = 84;
+      const GX = 18;
+      const GY = 62;
+      const PAD = 18;
+      const byId = new Map(rows.map((r) => [String(r.id), r]));
+      const roots = rows.filter((r) => !r.parentId || !byId.has(String(r.parentId)));
+      if (roots.length === 0) roots.push(rows[0]);
+      const depth = new Map();
+      const queue = roots.map((r) => [r, 0]);
+      while (queue.length > 0) {
+        const item = queue.shift();
+        const row = item[0];
+        const d = item[1];
+        const id = String(row.id);
+        if (depth.has(id)) continue;
+        depth.set(id, d);
+        for (const child of rows) {
+          if (String(child.parentId) === id && !depth.has(String(child.id))) queue.push([child, d + 1]);
+        }
+      }
+      rows.forEach((r) => { if (!depth.has(String(r.id))) depth.set(String(r.id), 0); });
+      const levels = [];
+      rows.forEach((r) => {
+        const d = depth.get(String(r.id));
+        if (!levels[d]) levels[d] = [];
+        levels[d].push(r);
+      });
+      const counts = levels.map((l) => (l ? l.length : 0));
+      const maxCount = Math.max.apply(null, counts.concat([1]));
+      const width = Math.max(620, PAD * 2 + maxCount * W + Math.max(0, maxCount - 1) * GX);
+      const height = PAD * 2 + levels.length * H + Math.max(0, levels.length - 1) * GY;
+      const pos = new Map();
+      levels.forEach((list, d) => {
+        if (!list) return;
+        const lw = list.length * W + Math.max(0, list.length - 1) * GX;
+        const start = (width - lw) / 2;
+        list.forEach((r, i) => pos.set(String(r.id), { x: start + i * (W + GX), y: PAD + d * (H + GY) }));
+      });
+      const maxSteps = Math.max(1, ...rows.map((r) => Number(r.usage && r.usage.steps) || 0));
+      const edges = [];
+      rows.forEach((r) => {
+        const parent = r.parentId ? pos.get(String(r.parentId)) : undefined;
+        const self = pos.get(String(r.id));
+        if (!parent || !self) return;
+        const x1 = parent.x + W / 2;
+        const y1 = parent.y + H;
+        const x2 = self.x + W / 2;
+        const y2 = self.y;
+        const mid = (y1 + y2) / 2;
+        edges.push(h('path', {
+          key: 'e:' + r.id,
+          d: 'M' + x1 + ' ' + y1 + ' C' + x1 + ' ' + mid + ', ' + x2 + ' ' + mid + ', ' + x2 + ' ' + y2,
+          className: 'acp_edge' + (isRunningRow(r) ? ' acp_edgeRun' : ''),
+        }));
+      });
+      const nodes = rows.map((r) => {
+        const p = pos.get(String(r.id));
+        const u = r.usage || {};
+        const steps = Number(u.steps) || 0;
+        const total = (Number(u.input) || 0) + (Number(u.output) || 0) + (Number(u.cacheRead) || 0);
+        const task = (props.tasks || []).find((x) => String(x.ownerId) === String(r.id) || String(x.owner) === String(r.id));
+        const pct = Math.max(4, Math.round((steps / maxSteps) * 100));
+        return h('button', {
+          type: 'button',
+          key: 'n:' + r.id,
+          className: 'acp_graphNode' + (isRunningRow(r) ? ' acp_graphNodeRun' : '') + (r.current ? ' acp_graphNodeCurrent' : ''),
+          style: { left: p.x + 'px', top: p.y + 'px', width: W + 'px', height: H + 'px' },
+          onClick: () => props.openMember(props.sessionId, r.id),
+          title: t('open'),
+        }, [
+          h('span', { className: 'acp_graphHeadRow', key: 'head' }, [
+            h('span', { className: 'acp_graphDot ' + (isRunningRow(r) ? 'acp_dotRun' : 'acp_dotIdle'), key: 'dot' }),
+            h('span', { className: 'acp_graphName', key: 'name' }, String(r.name)),
+            r.role === 'lead' ? h('span', { className: 'acp_graphRole', key: 'role' }, 'LEAD') : null,
+          ]),
+          h('span', { className: 'acp_graphTask', key: 'task' }, task ? String(task.subject) : (r.description ? String(r.description) : t('noTask'))),
+          h('span', { className: 'acp_graphStats', key: 'stats' }, String(steps) + ' 步 · ' + fmtTokens(total)),
+          h('span', { className: 'acp_graphBar', key: 'bar' }, h('i', { style: { width: pct + '%' } })),
+        ]);
+      });
+      return h('div', { className: 'acp_graph', key: 'graph' }, [
+        h('div', { className: 'acp_graphHead', key: 'head' }, [
+          h('span', { className: 'acp_sectionHead', key: 'title' }, [
+            h('span', { key: 't' }, t('graphTitle')),
+            h('span', { className: 'acp_count', key: 'c' }, String(rows.length)),
+          ]),
+          h('span', { className: 'acp_hint', key: 'hint', style: { margin: 0 } }, t('graphHint')),
+        ]),
+        h('div', { className: 'acp_graphCanvas', key: 'canvas', style: { width: width + 'px', height: height + 'px' } }, [
+          h('svg', { key: 'svg', className: 'acp_graphSvg', width: width, height: height, viewBox: '0 0 ' + width + ' ' + height }, edges),
+          ...nodes,
+        ]),
+      ]);
+    }
+
+    function ContextPulse(props) {
+      const t = props.t;
+      const rows = Array.isArray(props.rows) ? props.rows : [];
+      if (rows.length === 0) return null;
+      const list = rows.map((row) => {
+        const u = row.usage || {};
+        const read = Number(u.cacheRead) || 0;
+        const out = Number(u.output) || 0;
+        return { row, read, out, total: read + out };
+      }).sort((a, b) => b.total - a.total);
+      const max = Math.max(1, ...list.map((x) => x.total));
+      const sumRead = list.reduce((s, x) => s + x.read, 0);
+      const sumOut = list.reduce((s, x) => s + x.out, 0);
+      const pressure = sumRead + sumOut > 0 ? Math.round((sumRead / (sumRead + sumOut)) * 100) : 0;
+      return h('div', { className: 'acp_pulse', key: 'pulse' }, [
+        h('div', { className: 'acp_pulseHead', key: 'head' }, [
+          h('span', { className: 'acp_pulseTitle', key: 't' }, t('pulseTitle')),
+          h('span', { className: 'acp_pulseBadge', key: 'p' }, String(pressure) + '% ' + t('pulsePressure')),
+        ]),
+        h('p', { className: 'acp_hint', key: 'hint' }, t('pulseHint')),
+        h('div', { className: 'acp_pulseList', key: 'list' }, list.slice(0, 8).map((x) => h('div', { className: 'acp_pulseRow', key: String(x.row.id) }, [
+          h('span', { className: 'acp_pulseName', key: 'n', title: String(x.row.name) }, String(x.row.name)),
+          h('span', { className: 'acp_pulseTrack', key: 'track' }, [
+            h('i', { className: 'acp_pulseOut', key: 'o', style: { width: Math.round((x.out / max) * 100) + '%' } }),
+            h('i', { className: 'acp_pulseRead', key: 'r', style: { width: Math.round((x.read / max) * 100) + '%' } }),
+          ]),
+          h('span', { className: 'acp_pulseVal', key: 'v' }, fmtTokens(x.total)),
+        ]))),
+      ]);
     }
 
     /* 纯渲染部分：不碰 hooks / fetch，便于单独冒烟与回退 */
@@ -988,7 +1171,7 @@ window.__ModuleLoader__.load({
       const rows = Array.isArray(props.rows) ? props.rows : [];
       const members = Array.isArray(props.members) ? props.members : [];
       const tasks = Array.isArray(props.tasks) ? props.tasks : [];
-      const expandedRef = React.useState(false);
+      const expandedRef = React.useState(true);
       const expanded = expandedRef[0];
       const setExpanded = expandedRef[1];
       const archivedRef = React.useState(false);
@@ -1026,6 +1209,16 @@ window.__ModuleLoader__.load({
       });
 
       if (hasFamilyRows) {
+        const totals = snap.data && snap.data.totals ? snap.data.totals : {};
+        body.push(h(AgentGraph, {
+          key: 'graph',
+          rows: visibleRows,
+          tasks,
+          t,
+          sessionId: props.sessionId,
+          openMember: props.openMember,
+        }));
+        body.push(h(ContextPulse, { key: 'pulse', rows: visibleRows, t }));
         if (active.length > 0) {
           body.push(h('div', { className: 'acp_grid', key: 'active' }, active.map(card)));
         }
@@ -1055,7 +1248,6 @@ window.__ModuleLoader__.load({
               : null,
           ]));
         }
-        const totals = snap.data && snap.data.totals ? snap.data.totals : {};
         const ratio = snap.data && typeof snap.data.ratio === 'number' ? snap.data.ratio : 0;
         body.push(h('div', { className: 'acp_statStrip', key: 'totals' }, [
           h('span', { className: 'acp_miniStat', key: 'active' }, [h('b', { key: 'v' }, String(active.length)), t('statActive')]),
@@ -1977,7 +2169,7 @@ window.__ModuleLoader__.load({
         h('span', { key: 'label' }, t(labelKey)),
       ]);
       if (hasTeam) {
-        stats.push(stat('members', 'statMembers', members.length, ''));
+        stats.push(stat('members', 'statMembers', familyReady ? visibleFamilyRows.length : members.length, ''));
         stats.push(stat('active', 'statActive', activeCount, activeCount > 0 ? 'acp_statActive' : ''));
         stats.push(stat('idle', 'statusIdleGroup', idleCount, idleCount > 0 ? 'acp_statIdle' : ''));
         stats.push(stat('tasks', 'statTasks', tasks.length, ''));

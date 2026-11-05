@@ -33,9 +33,14 @@ const agents = mode === 'empty' ? [
   agent(LEAD, 'lead', 'inactive', 'lead', 66, 93480, 12400000, 40 * 60000),
 ] : [
   agent(LEAD, 'lead', 'inactive', 'lead', 66, 93480, 12400000, 40 * 60000),
-  agent(MATE1, 'game-core', 'running', 'teammate', 36, 79513, 1925888, 60 * 1000),
-  agent(MATE2, 'game-presentation', 'inactive', 'teammate', 146, 171547, 12340352, 180 * 60000),
+  agent(MATE1, 'game-core', 'running', 'teammate', 36, 79513, 1925888, 60 * 1000, LEAD),
+  agent(MATE2, 'game-presentation', 'inactive', 'teammate', 146, 171547, 12340352, 180 * 60000, LEAD),
   agent(MATE3, 'game-qa', 'inactive', 'subagent', 18, 88233, 1104768, 240 * 60000, MATE1),
+  agent('session-mate0004', 'host-cleaner', 'inactive', 'teammate', 303, 167000, 76700000, 240 * 60000, LEAD),
+  agent('session-mate0005', 'components-a', 'running', 'subagent', 199, 52000, 52300000, 120 * 60000, MATE1),
+  agent('session-mate0006', 'components-b', 'inactive', 'subagent', 220, 66000, 66000000, 240 * 60000, MATE1),
+  agent('session-mate0007', 'styles-infra', 'inactive', 'teammate', 243, 83000, 83600000, 240 * 60000, LEAD),
+  agent('session-mate0008', 'tests-host', 'inactive', 'teammate', 333, 109000, 109000000, 240 * 60000, LEAD),
 ];
 
 const tasks = mode === 'empty' ? [] : [

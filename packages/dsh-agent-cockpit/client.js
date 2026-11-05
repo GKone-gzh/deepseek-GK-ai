@@ -251,6 +251,28 @@ window.__ModuleLoader__.load({
 .acp_ctxBar{height:4px;border-radius:999px;background:var(--dsw-alias-border-l1);overflow:hidden}
 .acp_ctxBar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--ctx-accent,#4f7cff),color-mix(in srgb,var(--ctx-accent,#4f7cff) 45%,#fff))}
 .acp_ctxFoot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--dsw-alias-label-tertiary)}
+.acp_filterBar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0 8px}
+.acp_filterTabs{display:flex;gap:3px;padding:3px;border:1px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-layer-2)}
+.acp_filterTab{padding:4px 10px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:11.5px;cursor:pointer;transition:background .15s ease,color .15s ease,transform .12s ease}
+.acp_filterTab:hover{background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary)}
+.acp_filterTabActive{background:linear-gradient(135deg,#4f7cff,#8b5cf6);color:#fff;box-shadow:0 2px 8px rgba(79,124,255,.28)}
+.acp_filterTab:active{transform:scale(.97)}
+.acp_filterSearch{flex:1 1 150px;min-width:130px;height:28px;padding:0 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:8px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:11.5px;outline:none;transition:border-color .15s ease,box-shadow .15s ease}
+.acp_filterSearch:focus{border-color:#4f7cff;box-shadow:0 0 0 3px rgba(79,124,255,.16)}
+.acp_graphTools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.acp_graphTools .acp_miniAction{min-width:28px;justify-content:center;font-variant-numeric:tabular-nums}
+@keyframes acpFadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes acpPop{from{opacity:0;transform:scale(.965)}to{opacity:1;transform:scale(1)}}
+@keyframes acpPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.35)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
+@keyframes acpBarGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.acp_card,.acp_ctxCard,.acp_graphNode{animation:acpFadeUp .34s cubic-bezier(.2,.8,.2,1) both}
+.acp_graphNodeRun .acp_graphDot{animation:acpPulse 1.8s ease-in-out infinite}
+.acp_bar i,.acp_ctxBar i,.acp_graphBar i{transform-origin:left center;animation:acpBarGrow .7s cubic-bezier(.2,.8,.2,1) both}
+.acp_doctorMask{animation:acpFadeUp .18s ease both}
+.acp_doctorCard{animation:acpPop .22s cubic-bezier(.2,.8,.2,1) both}
+.acp_action,.acp_miniAction,.acp_disclosure{transition:background .15s ease,border-color .15s ease,color .15s ease,transform .12s ease,box-shadow .15s ease}
+.acp_action:active,.acp_miniAction:active,.acp_disclosure:active{transform:scale(.97)}
+@media (prefers-reduced-motion: reduce){.acp_card,.acp_ctxCard,.acp_graphNode,.acp_doctorMask,.acp_doctorCard,.acp_bar i,.acp_ctxBar i,.acp_graphBar i,.acp_graphNodeRun .acp_graphDot{animation:none!important}.acp_action,.acp_miniAction,.acp_filterTab,.acp_filterSearch,.acp_graphNode{transition:none!important}}
 .acp_terrain{margin:12px 0 6px;padding:14px 16px 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:16px;background:radial-gradient(circle at 85% 0%,rgba(139,92,246,.10),transparent 50%),var(--dsw-alias-bg-layer-1)}
 .acp_terrainHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .acp_terrainTitle{font-size:13px;font-weight:650}
@@ -457,11 +479,19 @@ window.__ModuleLoader__.load({
       doctorClean: '未发现冲突',
       doctorResultFix: '已移除：',
       doctorResultOptout: '已从 profile 移除 GK协助工作台，重启后不再加载。',
+      filterAll: '全部',
+      filterRunning: '进行中',
+      filterIdle: '空闲',
+      searchMember: '搜索成员…',
+      noMemberMatch: '没有匹配的成员',
+      graphZoomIn: '放大星图',
+      graphZoomOut: '缩小星图',
+      graphZoomReset: '重置星图缩放',
       archiveIdle: '归档空闲成员',
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.6.4 · 协作星图 / 上下文用量 / 计划商讨 / 预算熔断',
+      versionNote: 'GK协助工作台 v1.7.0 · 协作星图 / 上下文用量 / 计划商讨 / 预算熔断',
     };
 
     const en = {
@@ -652,11 +682,19 @@ window.__ModuleLoader__.load({
       doctorClean: 'No conflicts found',
       doctorResultFix: 'Removed: ',
       doctorResultOptout: 'GK Workbench was removed from the profile; it will stop loading after a restart.',
+      filterAll: 'All',
+      filterRunning: 'Running',
+      filterIdle: 'Idle',
+      searchMember: 'Search members…',
+      noMemberMatch: 'No matching members',
+      graphZoomIn: 'Zoom in',
+      graphZoomOut: 'Zoom out',
+      graphZoomReset: 'Reset zoom',
       archiveIdle: 'Archive idle',
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.6.4 · collaboration map / context usage / council preset',
+      versionNote: 'GK Workbench v1.7.0 · collaboration map / context usage / council preset',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */
@@ -1245,6 +1283,7 @@ window.__ModuleLoader__.load({
           key: String(x.row.id),
           style: {
             '--ctx-accent': accent,
+            animationDelay: String(index * 30) + 'ms',
             background: 'linear-gradient(135deg, ' + accent + '18, transparent 58%), var(--dsw-alias-bg-layer-1)',
           },
         }, [
@@ -1292,6 +1331,9 @@ window.__ModuleLoader__.load({
     function AgentGraph(props) {
       const t = props.t;
       const rows = Array.isArray(props.rows) ? props.rows : [];
+      const zoomRef = React.useState(1);
+      const zoom = zoomRef[0];
+      const setZoom = zoomRef[1];
       if (rows.length === 0) return null;
       const W = 168;
       const H = 84;
@@ -1349,7 +1391,7 @@ window.__ModuleLoader__.load({
           className: 'acp_edge' + (isRunningRow(r) ? ' acp_edgeRun' : ''),
         }));
       });
-      const nodes = rows.map((r) => {
+      const nodes = rows.map((r, index) => {
         const p = pos.get(String(r.id));
         const u = r.usage || {};
         const steps = Number(u.steps) || 0;
@@ -1360,7 +1402,7 @@ window.__ModuleLoader__.load({
           type: 'button',
           key: 'n:' + r.id,
           className: 'acp_graphNode' + (isRunningRow(r) ? ' acp_graphNodeRun' : '') + (r.current ? ' acp_graphNodeCurrent' : ''),
-          style: { left: p.x + 'px', top: p.y + 'px', width: W + 'px', height: H + 'px' },
+          style: { left: p.x + 'px', top: p.y + 'px', width: W + 'px', height: H + 'px', animationDelay: String(index * 35) + 'ms' },
           onClick: () => props.openMember(props.sessionId, r.id),
           title: t('open'),
         }, [
@@ -1379,9 +1421,14 @@ window.__ModuleLoader__.load({
             h('span', { key: 't' }, t('graphTitle')),
             h('span', { className: 'acp_count', key: 'c' }, String(rows.length)),
           ]),
-          h('span', { className: 'acp_hint', key: 'hint', style: { margin: 0 } }, t('graphHint')),
+          h('div', { className: 'acp_graphTools', key: 'tools' }, [
+            h('span', { className: 'acp_hint', key: 'hint', style: { margin: 0 } }, t('graphHint')),
+            h('button', { type: 'button', className: 'acp_miniAction', key: 'out', title: t('graphZoomOut'), onClick: () => { if (typeof setZoom === 'function') setZoom(Math.max(0.6, Math.round((zoom - 0.2) * 10) / 10)); } }, '−'),
+            h('button', { type: 'button', className: 'acp_miniAction', key: 'reset', title: t('graphZoomReset'), onClick: () => { if (typeof setZoom === 'function') setZoom(1); } }, String(Math.round(zoom * 100)) + '%'),
+            h('button', { type: 'button', className: 'acp_miniAction', key: 'in', title: t('graphZoomIn'), onClick: () => { if (typeof setZoom === 'function') setZoom(Math.min(1.6, Math.round((zoom + 0.2) * 10) / 10)); } }, '+'),
+          ]),
         ]),
-        h('div', { className: 'acp_graphCanvas', key: 'canvas', style: { width: width + 'px', height: height + 'px' } }, [
+        h('div', { className: 'acp_graphCanvas', key: 'canvas', style: { width: width + 'px', height: height + 'px', zoom } }, [
           h('svg', { key: 'svg', className: 'acp_graphSvg', width: width, height: height, viewBox: '0 0 ' + width + ' ' + height }, edges),
           ...nodes,
         ]),
@@ -1441,6 +1488,12 @@ window.__ModuleLoader__.load({
       const hasFamilyRows = rows.length > 0;
       const count = hasFamilyRows ? visibleRows.length : members.length;
       const canArchive = typeof props.onArchive === 'function' && idle.length > 0;
+      const memberFilterRef = React.useState('all');
+      const memberFilter = memberFilterRef[0];
+      const setMemberFilter = memberFilterRef[1];
+      const memberQueryRef = React.useState('');
+      const memberQuery = memberQueryRef[0];
+      const setMemberQuery = memberQueryRef[1];
       const deptNames = departmentNames(visibleRows);
       const displayNameOf = (row) => deptNames.get(String(row.id)) || String(row.name);
 
@@ -1478,33 +1531,48 @@ window.__ModuleLoader__.load({
           openMember: props.openMember,
         }));
         body.push(h(ContextCards, { key: 'context-cards', rows: visibleRows, t, displayName: displayNameOf }));
-        if (active.length > 0) {
-          body.push(h('div', { className: 'acp_grid', key: 'active' }, active.map(card)));
-        }
-        if (idle.length > 0) {
-          body.push(h('div', { className: 'acp_idleGroup', key: 'idle' }, [
-            h('div', { className: 'acp_disclosureRow', key: 'row' }, [
-              h('button', {
-                type: 'button',
-                className: 'acp_disclosure',
-                key: 'toggle',
-                onClick: () => { if (typeof setExpanded === 'function') setExpanded(!expanded); },
-              }, [
-                h('span', { className: 'acp_disclosureCaret', key: 'caret' }, expanded ? '▾' : '▸'),
-                h('span', { key: 'label' }, t('statusIdleGroup') + ' (' + String(idle.length) + ')'),
-              ]),
-              canArchive ? h('div', { className: 'acp_disclosureActions', key: 'actions' }, [
-                h('button', {
-                  type: 'button',
-                  className: 'acp_miniAction',
-                  key: 'archive',
-                  onClick: () => props.onArchive(idle.map((row) => String(row.id))),
-                }, t('archiveIdle') + ' (' + String(idle.length) + ')'),
-              ]) : null,
-            ].filter(Boolean)),
-            expanded
-              ? h('div', { className: 'acp_grid', key: 'grid', style: { marginTop: 8 } }, idle.map(card))
-              : null,
+        const query = String(memberQuery || '').trim().toLowerCase();
+        const filteredRows = visibleRows.filter((row) => {
+          if (memberFilter === 'running' && !isRunningRow(row)) return false;
+          if (memberFilter === 'idle' && isRunningRow(row)) return false;
+          if (query !== '') {
+            const hay = (String(row.name || '') + ' ' + String(row.description || '')).toLowerCase();
+            if (hay.indexOf(query) < 0) return false;
+          }
+          return true;
+        });
+        body.push(h('div', { className: 'acp_filterBar', key: 'filters' }, [
+          h('div', { className: 'acp_filterTabs', key: 'tabs' }, [
+            [['all', t('filterAll'), visibleRows.length],
+              ['running', t('filterRunning'), active.length],
+              ['idle', t('filterIdle'), idle.length]].map(([key, label, n]) => h('button', {
+              type: 'button',
+              key,
+              className: 'acp_filterTab' + (memberFilter === key ? ' acp_filterTabActive' : ''),
+              onClick: () => { if (typeof setMemberFilter === 'function') setMemberFilter(key); },
+            }, String(label) + ' ' + String(n))),
+          ]),
+          h('input', {
+            className: 'acp_filterSearch',
+            key: 'search',
+            type: 'search',
+            value: memberQuery,
+            placeholder: t('searchMember'),
+            onChange: (event) => { if (typeof setMemberQuery === 'function') setMemberQuery(event && event.target ? event.target.value : ''); },
+          }),
+          canArchive ? h('button', {
+            type: 'button',
+            className: 'acp_miniAction',
+            key: 'archive',
+            onClick: () => props.onArchive(idle.map((row) => String(row.id))),
+          }, t('archiveIdle') + ' (' + String(idle.length) + ')') : null,
+        ].filter(Boolean)));
+        if (filteredRows.length > 0) {
+          body.push(h('div', { className: 'acp_grid', key: 'members' }, filteredRows.map(card)));
+        } else {
+          body.push(h('div', { className: 'acp_notice', key: 'noMatch', role: 'status' }, [
+            h('span', { className: 'acp_dot acp_dotIdle', key: 'dot' }),
+            h('span', { key: 'text' }, t('noMemberMatch')),
           ]));
         }
         const ratio = snap.data && typeof snap.data.ratio === 'number' ? snap.data.ratio : 0;

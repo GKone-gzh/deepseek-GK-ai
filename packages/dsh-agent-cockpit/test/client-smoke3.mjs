@@ -255,6 +255,12 @@ for (const { key, entry } of registrations) {
       expect(text.indexOf('插件冲突检查') >= 0, '插件冲突弹窗出现');
       expect(text.indexOf('自主修复') >= 0 && text.indexOf('不使用我们的插件') >= 0, '冲突弹窗含修复/停用按钮');
       expect(text.indexOf('打开说明对话') >= 0, '冲突弹窗含打开说明对话');
+      localStorage.setItem('agent-cockpit:lang', 'en');
+      const enText = collect(entry.component(props)).text;
+      localStorage.removeItem('agent-cockpit:lang');
+      expect(enText.indexOf('Context usage') >= 0, '英文上下文用量标题');
+      expect(enText.indexOf('Collaboration map') >= 0, '英文协作星图标题');
+      expect(enText.indexOf('All') >= 0, '英文筛选标签');
     }
     if (key === 'conversation.input.dock') {
       expect(text.indexOf('1 statusRunning') >= 0, '徽章只显示运行中的数量');

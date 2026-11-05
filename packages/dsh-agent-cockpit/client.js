@@ -232,6 +232,22 @@ window.__ModuleLoader__.load({
 .acp_pulseOut{display:block;height:100%;background:linear-gradient(90deg,#4f7cff,#6d8dff)}
 .acp_pulseRead{display:block;height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
 .acp_pulseVal{text-align:right;font-size:10.5px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
+.acp_terrain{margin:12px 0 6px;padding:14px 16px 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:16px;background:radial-gradient(circle at 85% 0%,rgba(139,92,246,.10),transparent 50%),var(--dsw-alias-bg-layer-1)}
+.acp_terrainHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.acp_terrainTitle{font-size:13px;font-weight:650}
+.acp_terrainBadges{display:flex;gap:6px;flex-wrap:wrap}
+.acp_terrainBadge{padding:1px 8px;border-radius:999px;font-size:10.5px;color:var(--dsw-alias-label-secondary);border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2)}
+.acp_terrainBadgeRead{color:#8b5cf6;border-color:rgba(139,92,246,.30);background:rgba(139,92,246,.08)}
+.acp_terrainLegend{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 2px;font-size:10.5px;color:var(--dsw-alias-label-tertiary)}
+.acp_terrainLegendItem{display:inline-flex;align-items:center;gap:5px}
+.acp_terrainDot{display:inline-block;width:7px;height:7px;border-radius:2px}
+.acp_terrainChart{display:flex;align-items:flex-end;gap:10px;height:190px;padding:12px 2px 0;border-bottom:1px solid var(--dsw-alias-border-l2);overflow-x:auto}
+.acp_terrainCol{flex:1 1 0;min-width:46px;height:100%;display:flex;flex-direction:column;align-items:center;gap:4px}
+.acp_terrainVal{font-size:10px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
+.acp_terrainBarWrap{flex:1;display:flex;align-items:flex-end;width:26px;min-height:0}
+.acp_terrainBar{display:flex;flex-direction:column-reverse;width:100%;border-radius:6px 6px 0 0;overflow:hidden;background:var(--dsw-alias-bg-layer-2);box-shadow:0 0 0 1px var(--dsw-alias-border-l2) inset}
+.acp_terrainBar i{display:block;width:100%}
+.acp_terrainName{max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--dsw-alias-label-secondary)}
 `;
 
     const zh = {
@@ -317,6 +333,13 @@ window.__ModuleLoader__.load({
       pulseTitle: '上下文脉搏',
       pulseHint: '只统计上下文重读与产出：紫色是重读，蓝色是输出；条越长越吃上下文。',
       pulsePressure: '重读占比',
+      terrainTitle: '上下文地形',
+      terrainHint: '每根柱子是一个 Agent 的上下文构成，按总量从高到低；柱顶数字是计量 token。',
+      terrainLegendRead: '重读',
+      terrainLegendInput: '输入',
+      terrainLegendWrite: '写入',
+      terrainLegendOutput: '输出',
+      terrainEmpty: '还没有上下文数据',
       contextTitle: '上下文',
       contextSubtitle: '本会话的上下文压力、构成与逐次调用',
       contextPressure: '上下文压力',
@@ -412,7 +435,7 @@ window.__ModuleLoader__.load({
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.5.0 · 协作星图 / 上下文脉搏 / 计划商讨 / 预算熔断',
+      versionNote: 'GK协助工作台 v1.6.0 · 协作星图 / 上下文地形 / 计划商讨 / 预算熔断',
     };
 
     const en = {
@@ -498,6 +521,13 @@ window.__ModuleLoader__.load({
       pulseTitle: 'Context pulse',
       pulseHint: 'Cache reread vs output: purple is reread, blue is output. Longer bars burn more context.',
       pulsePressure: 'reread share',
+      terrainTitle: 'Context terrain',
+      terrainHint: 'One column per agent, sorted by total context tokens.',
+      terrainLegendRead: 'reread',
+      terrainLegendInput: 'input',
+      terrainLegendWrite: 'write',
+      terrainLegendOutput: 'output',
+      terrainEmpty: 'No context data yet',
       contextTitle: 'Context',
       contextSubtitle: 'Context pressure, composition, and recent calls for this session',
       contextPressure: 'Context pressure',
@@ -593,7 +623,7 @@ window.__ModuleLoader__.load({
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.5.0 · collaboration map / context pulse / council preset',
+      versionNote: 'GK Workbench v1.6.0 · collaboration map / context terrain / council preset',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */
@@ -1025,6 +1055,76 @@ window.__ModuleLoader__.load({
       }, children);
     }
 
+    function ContextTerrain(props) {
+      const t = props.t;
+      const rows = Array.isArray(props.rows) ? props.rows : [];
+      if (rows.length === 0) return null;
+      const partsOf = (row) => {
+        const u = row.usage || {};
+        return {
+          read: Number(u.cacheRead) || 0,
+          input: Number(u.input) || 0,
+          write: Number(u.cacheWrite) || 0,
+          output: Number(u.output) || 0,
+        };
+      };
+      const list = rows.map((row) => {
+        const parts = partsOf(row);
+        return { row, parts, total: parts.read + parts.input + parts.write + parts.output };
+      }).sort((a, b) => b.total - a.total);
+      const max = Math.max(1, ...list.map((x) => x.total));
+      const sumRead = list.reduce((s, x) => s + x.parts.read, 0);
+      const sumAll = list.reduce((s, x) => s + x.total, 0);
+      const pressure = sumAll > 0 ? Math.round((sumRead / sumAll) * 100) : 0;
+      const legend = [
+        ['read', 'terrainLegendRead', '#8b5cf6'],
+        ['input', 'terrainLegendInput', '#4f7cff'],
+        ['write', 'terrainLegendWrite', '#14b8a6'],
+        ['output', 'terrainLegendOutput', '#f59e0b'],
+      ];
+      return h('div', { className: 'acp_terrain', key: 'terrain', id: 'acp-context-terrain' }, [
+        h('div', { className: 'acp_terrainHead', key: 'head' }, [
+          h('div', { key: 'left' }, [
+            h('div', { className: 'acp_terrainTitle', key: 'title' }, t('terrainTitle')),
+            h('p', { className: 'acp_hint', key: 'hint', style: { margin: '2px 0 0' } }, t('terrainHint')),
+          ]),
+          h('div', { className: 'acp_terrainBadges', key: 'badges' }, [
+            h('span', { className: 'acp_terrainBadge', key: 'total' }, fmtTokens(sumAll) + ' ctx'),
+            h('span', { className: 'acp_terrainBadge acp_terrainBadgeRead', key: 'read' }, String(pressure) + '% ' + t('pulsePressure')),
+          ]),
+        ]),
+        h('div', { className: 'acp_terrainLegend', key: 'legend' }, legend.map(([key, label, color]) => h('span', { className: 'acp_terrainLegendItem', key }, [
+          h('i', { className: 'acp_terrainDot', style: { background: color }, key: 'dot' }),
+          h('span', { key: 'label' }, t(label)),
+        ]))),
+        h('div', { className: 'acp_terrainChart', key: 'chart' }, list.map((x) => {
+          const total = Math.max(1, x.total);
+          const height = Math.max(6, Math.round((x.total / max) * 100));
+          const seg = (key, color) => {
+            const value = x.parts[key];
+            if (value <= 0) return null;
+            return h('i', {
+              key,
+              title: t(legend.find((item) => item[0] === key)[1]) + ': ' + fmtTokens(value),
+              style: { height: Math.round((value / total) * 100) + '%', background: color },
+            });
+          };
+          return h('div', { className: 'acp_terrainCol', key: String(x.row.id), title: String(x.row.name) + ' · ' + fmtTokens(x.total) }, [
+            h('span', { className: 'acp_terrainVal', key: 'val' }, fmtTokens(x.total)),
+            h('span', { className: 'acp_terrainBarWrap', key: 'wrap' }, [
+              h('span', { className: 'acp_terrainBar', key: 'bar', style: { height: height + '%' } }, [
+                seg('read', '#8b5cf6'),
+                seg('input', '#4f7cff'),
+                seg('write', '#14b8a6'),
+                seg('output', '#f59e0b'),
+              ].filter(Boolean)),
+            ]),
+            h('span', { className: 'acp_terrainName', key: 'name' }, String(x.row.name)),
+          ]);
+        })),
+      ]);
+    }
+
     function initialsOf(name) {
       const s = String(name || '').trim();
       if (!s) return 'AI';
@@ -1218,7 +1318,7 @@ window.__ModuleLoader__.load({
           sessionId: props.sessionId,
           openMember: props.openMember,
         }));
-        body.push(h(ContextPulse, { key: 'pulse', rows: visibleRows, t }));
+        body.push(h(ContextTerrain, { key: 'terrain', rows: visibleRows, t }));
         if (active.length > 0) {
           body.push(h('div', { className: 'acp_grid', key: 'active' }, active.map(card)));
         }
@@ -2207,7 +2307,12 @@ window.__ModuleLoader__.load({
           className: 'acp_action',
           key: 'context',
           title: t('contextTitle'),
-          onClick: () => { if (typeof props.openView === 'function') props.openView('context', ''); },
+          onClick: () => {
+            if (typeof document !== 'undefined' && document.getElementById) {
+              const node = document.getElementById('acp-context-terrain');
+              if (node && typeof node.scrollIntoView === 'function') node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          },
         }, t('tabContext')),
         hasTeam || budget ? h('button', {
           type: 'button',

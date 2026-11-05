@@ -1,17 +1,9 @@
 # dsh-agent-cockpit 的宿主行。
-# 第二行是本插件内置的上下文分析引擎（原 dsh-context v0.79.0 的代码，Apache-2.0，
-# 见 vendor 目录里的 LICENSE 与 README 署名），由本插件一并提供，不再作为独立插件安装。
-# 第三行是「计划商讨模式」的 agent preset 声明：新对话的模式下拉里会出现这个选项；
+# 第二行是「计划商讨模式」的 agent preset 声明：新对话的模式下拉里会出现这个选项；
 # 它挂载本包的 council-preset 行，在会话内注入商讨协议并把协作模式切到 council。
 - insert:
     - id: agent-cockpit
       name: dsh-agent-cockpit
-    - id: agent-cockpit-context
-      name: dsh-context-core
-      # 编队卡片已并进 GK协助工作台（agent-cockpit 的 conversation.view），
-      # 所以引擎自己那个「编队」标签页默认隐藏，避免出现两个编队界面。
-      config:
-        fleetTab: hide
     - id: preset-council
       name: '@deepseek-ai/dsh-agent-preset'
       config:

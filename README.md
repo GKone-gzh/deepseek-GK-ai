@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.5.0-4f7cff" alt="version">
+  <img src="https://img.shields.io/badge/version-1.6.0-4f7cff" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-22c55e" alt="license">
   <img src="https://img.shields.io/badge/tests-13%2F13-22c55e" alt="tests">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20DeepSeek%20Harness-8b5cf6" alt="platform">
@@ -35,7 +35,7 @@ GK协助工作台把这三件事补上：工作台页实时展示编队/任务/�
 | 能力 | 说明 |
 |---|---|
 | **协作星图** | 按父子关系自动分层的 Agent 网络：节点显示步数/token/当前任务/预算进度，运行态连线高亮，点击节点打开会话 |
-| **上下文脉搏** | 按重读量排序的横向频谱：紫色重读、蓝色输出，一眼看出谁在吃上下文 |
+| **上下文地形** | 每个 Agent 一根堆叠柱：input / cacheWrite / cacheRead / output，按总量排序，一眼看出谁在吃上下文 |
 | **编队卡片** | 主控 / 队友 / 子 Agent 的状态、职责、当前任务、步数/输出/重读、最后活动；空闲成员默认展开 |
 | **分工计划** | 按成员列任务，标注关键路径、未分配、阻塞、写范围冲突 |
 | **共享任务板** | 待办 / 进行中 / 已完成，关键路径任务高亮 |
@@ -94,7 +94,7 @@ cd gk-assist-workbench
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
 ```
 
-脚本会：复制工作台到 `<DSH_HOME>\plugins\dsh-agent-cockpit`、复制上下文引擎到 profile 的 `node_modules`、登记 bundle、建立目录联接；如果 profile 里已经装了独立 `dsh-context`，会先移除它并备份 `package.json`，避免重复注册。完成后**重启 DSH**。
+脚本会：复制工作台到 `<DSH_HOME>\plugins\dsh-agent-cockpit`、登记 bundle、建立目录联接。完成后**重启 DSH**。
 
 手动安装、升级、卸载见 [docs/INSTALL.md](docs/INSTALL.md)。
 
@@ -137,7 +137,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
 
 首次加载（或版本变化后第一次）扫描 profile：
 
-- 独立安装的 `dsh-context`、重复包名、重复宿主行、多个团队工具提供者、引擎缺失；
+- 重复包名、重复宿主行、多个团队工具提供者；
 - 有冲突时自动弹窗 + 新建「插件体检」对话说明；
 - 三个动作：**自主修复**（备份后移除冲突项，重启生效）、**不使用我们的插件**（从 bundles 移除，重启生效）、**暂不处理**。
 
@@ -152,8 +152,7 @@ DSH（宿主）
 │   ├─ host/state.js          state.json（模式/预算/归档/doctor）
 │   ├─ host/coordination.js   全局工具 guard + 系统提示 + 预算定时器
 │   └─ host/doctor.js         首次加载冲突扫描 / 修复 / 停用
-└─ agent-cockpit-context      ← 内置上下文分析引擎（dsh-context-core，Apache-2.0）
-    └─ 上下文页 / 洞察 / 侧边栏 / /context / 提示词前后缀
+└─ （无第三方引擎）           ← 上下文地形、星图、成本都由本插件自己算
 ```
 
 - **协作门禁**：`tools.guard` + `systemPrompt.section` 全局注册一次；`ask` 模式按 `session/event` 里「人类消息 / ask_user_question」的时间判定。
@@ -166,7 +165,6 @@ DSH（宿主）
 ```
 GET  /agent-cockpit/family?lead=<id>&session=<id>
 GET  /agent-cockpit/usage?lead=<id>&ids=<id,id>
-GET  /agent-cockpit/context?session=<id>&limit=24
 GET  /agent-cockpit/insights?limit=12
 GET  /agent-cockpit/taskcost?lead=<id>
 GET  /agent-cockpit/state?session=<id>
@@ -190,7 +188,7 @@ node packages\dsh-agent-cockpit\test\verify-all.mjs http://127.0.0.1:<port>
 
 - `mode=off/ask` 只拦协作类工具，不拦普通工具；已派出的队友仍能干完自己的活。
 - 预算熔断只中断正在运行的成员，不撤销已完成工作；窗口按最近人类消息重置。
-- 自动修复只覆盖已知冲突（dsh-context / 重复包名 / 重复宿主行）；团队工具重复、引擎缺失只报告。
+- 自动修复只覆盖已知冲突（重复包名 / 重复宿主行）；团队工具重复只报告。
 - 门禁依赖 Agent scope 上的 `tools.guard` / `systemPrompt.section`，DSH 升级后请跑一次 `coordination-test.mjs` 回归。
 - 首次加载的「插件体检」对话会消耗一次模型调用；失败时只保留弹窗。
 - 计划商讨的「不中途询问」由宿主禁用 `ask_user_question` + 提示词约束共同保证；模型仍可能自己提前结束，建议在计划里把验收标准写死。
@@ -201,7 +199,6 @@ node packages\dsh-agent-cockpit\test\verify-all.mjs http://127.0.0.1:<port>
 
 ```
 packages/dsh-agent-cockpit/   工作台插件（MIT）
-packages/dsh-context-core/    内置上下文引擎（Apache-2.0，源自 dsh-context v0.79.0）
 tools/install.ps1             安装
 tools/sync.ps1                同步到运行位置
 tools/verify.ps1              一键验收
@@ -213,5 +210,4 @@ docs/BENCHMARK.md             协作基准报告
 ## License
 
 - 本插件：MIT（见 [LICENSE](LICENSE)）
-- 内置上下文引擎：Apache-2.0（见 [packages/dsh-context-core/LICENSE](packages/dsh-context-core/LICENSE) 与 [NOTICE.md](NOTICE.md)）
-- 第三方致谢见 [NOTICE.md](NOTICE.md)
+- 无第三方运行时依赖；致谢见 [NOTICE.md](NOTICE.md)

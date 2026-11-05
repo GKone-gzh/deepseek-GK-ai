@@ -112,7 +112,6 @@ export function scanConflicts() {
   }
 
   const bundles = profile.pkg.dsh.profile.bundles || [];
-  const dependencies = profile.pkg.dependencies || {};
   const conflicts = [];
   const inspected = new Map();
 
@@ -120,20 +119,6 @@ export function scanConflicts() {
     if (!inspected.has(name)) inspected.set(name, inspectBundle(profile.dir, name));
     return inspected.get(name);
   };
-
-  /* 1) 独立安装的 dsh-context（与本插件内置引擎重复） */
-  const dshContextPresent = bundles.indexOf('dsh-context') >= 0
-    || Object.prototype.hasOwnProperty.call(dependencies, 'dsh-context');
-  if (dshContextPresent) {
-    conflicts.push({
-      code: 'duplicate-context',
-      severity: 'high',
-      title: '检测到独立安装的 dsh-context',
-      detail: '本插件已内置同一套上下文分析引擎（dsh-context-core）。两者同时安装会重复注册上下文页与 /context，导致标签重复或互相抢占。',
-      fixable: true,
-      action: 'fix',
-    });
-  }
 
   /* 2) 重复的宿主行 id / 同名包 */
   for (const name of bundles) {
@@ -176,18 +161,6 @@ export function scanConflicts() {
       severity: 'medium',
       title: '检测到多个团队工具提供者',
       detail: '以下 bundle 都插入了 agent-team/tool-agent-team 行：' + teamProviders.join(', ') + '。工具名会重复，spawn_teammate 等可能注册失败。',
-      fixable: false,
-      action: 'manual',
-    });
-  }
-
-  /* 4) 我们的内置引擎缺失（安装不完整） */
-  if (!existsSync(join(profile.dir, 'node_modules', 'dsh-context-core'))) {
-    conflicts.push({
-      code: 'missing-engine',
-      severity: 'medium',
-      title: '内置上下文引擎缺失',
-      detail: 'profile 的 node_modules 里没有 dsh-context-core，上下文/编队相关页面会缺失。请运行 sync-cockpit.ps1 重新同步。',
       fixable: false,
       action: 'manual',
     });
@@ -287,16 +260,11 @@ export function applyDoctorAction(action) {
         continue;
       }
       const meta = inspectBundle(profile.dir, name);
-      const conflict = name === 'dsh-context'
-        || (meta.found && (OUR_PACKAGES.has(meta.packageName) || meta.rowIds.some((id) => OUR_ROW_IDS.has(id))));
+      const conflict = meta.found && (OUR_PACKAGES.has(meta.packageName) || meta.rowIds.some((id) => OUR_ROW_IDS.has(id)));
       if (conflict) removed.push(name);
       else keep.push(name);
     }
     pkg.dsh.profile.bundles = keep;
-    if (pkg.dependencies && Object.prototype.hasOwnProperty.call(pkg.dependencies, 'dsh-context')) {
-      delete pkg.dependencies['dsh-context'];
-      removed.push('dependencies.dsh-context');
-    }
     writeProfile(profile, pkg);
     const next = setDoctor({
       status: removed.length > 0 ? 'fix-applied' : 'manual',

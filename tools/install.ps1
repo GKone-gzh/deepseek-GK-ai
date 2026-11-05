@@ -1,10 +1,9 @@
 ﻿# GK协助工作台 · 一键安装（Windows / PowerShell）
 #
-# 做四件事：
+# 做三件事：
 #   1) 把 packages/dsh-agent-cockpit 复制到 <DSH_HOME>\plugins\dsh-agent-cockpit
-#   2) 把 packages/dsh-context-core 复制到 <profile>\node_modules\dsh-context-core
-#   3) 把 dsh-agent-cockpit 登记到 profile package.json 的 dsh.profile.bundles
-#   4) 在 profile\node_modules 下建立 dsh-agent-cockpit 目录联接（Junction）
+#   2) 把 dsh-agent-cockpit 登记到 profile package.json 的 dsh.profile.bundles
+#   3) 在 profile\node_modules 下建立 dsh-agent-cockpit 目录联接（Junction）
 #
 # 用法：
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
@@ -18,26 +17,19 @@ param(
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $pluginSrc = Join-Path $repo 'packages\dsh-agent-cockpit'
-$engineSrc = Join-Path $repo 'packages\dsh-context-core'
 $profileDir = Join-Path $DshHome "profiles\$Profile"
 
-foreach ($dir in @($pluginSrc, $engineSrc)) {
+foreach ($dir in @($pluginSrc)) {
   if (-not (Test-Path -LiteralPath $dir)) { throw "缺少源码目录: $dir" }
 }
 if (-not (Test-Path -LiteralPath $profileDir)) { throw "找不到 profile: $profileDir（确认 DSH 已安装并启动过）" }
 
 $pluginDst = Join-Path $DshHome 'plugins\dsh-agent-cockpit'
-$engineDst = Join-Path $profileDir 'node_modules\dsh-context-core'
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $pluginDst) | Out-Null
-New-Item -ItemType Directory -Force -Path (Split-Path -Parent $engineDst) | Out-Null
 
 Write-Host "同步工作台 -> $pluginDst"
 & robocopy $pluginSrc $pluginDst /MIR /NFL /NDL /NJH /NJS | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy 失败（agent-cockpit）: $LASTEXITCODE" }
-
-Write-Host "同步上下文引擎 -> $engineDst"
-& robocopy $engineSrc $engineDst /MIR /NFL /NDL /NJH /NJS | Out-Null
-if ($LASTEXITCODE -ge 8) { throw "robocopy 失败（context-core）: $LASTEXITCODE" }
 
 # 登记 bundle
 $pkgPath = Join-Path $profileDir 'package.json'

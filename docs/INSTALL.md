@@ -14,12 +14,11 @@ cd gk-assist-workbench
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
 ```
 
-`install.ps1` 做四件事：
+`install.ps1` 做三件事：
 
 1. `packages/dsh-agent-cockpit` → `<DSH_HOME>\plugins\dsh-agent-cockpit`
-2. `packages/dsh-context-core` → `<DSH_HOME>\profiles\<profile>\node_modules\dsh-context-core`
-3. 把 `dsh-agent-cockpit` 加进 profile `package.json` 的 `dsh.profile.bundles`（改前备份 `package.json.bak-gk-install-*`）
-4. 在 profile `node_modules` 下建立 `dsh-agent-cockpit` → 插件目录的 Junction
+2. 把 `dsh-agent-cockpit` 加进 profile `package.json` 的 `dsh.profile.bundles`（改前备份 `package.json.bak-gk-install-*`）
+3. 在 profile `node_modules` 下建立 `dsh-agent-cockpit` → 插件目录的 Junction
 
 装完**重启 DSH**。
 
@@ -33,9 +32,8 @@ $env:DSH_HOME = 'D:\dsh-home'
 ## 手动安装
 
 1. 复制 `packages/dsh-agent-cockpit` → `<DSH_HOME>\plugins\dsh-agent-cockpit`
-2. 复制 `packages/dsh-context-core` → `<DSH_HOME>\profiles\<profile>\node_modules\dsh-context-core`
-3. 编辑 `<profile>\package.json`，在 `dsh.profile.bundles` 加入 `dsh-agent-cockpit`
-4. 建立目录联接：
+2. 编辑 `<profile>\package.json`，在 `dsh.profile.bundles` 加入 `dsh-agent-cockpit`
+3. 建立目录联接：
 
 ```powershell
 New-Item -ItemType Junction `
@@ -43,7 +41,7 @@ New-Item -ItemType Junction `
   -Target "$env:USERPROFILE\.dsh\plugins\dsh-agent-cockpit"
 ```
 
-5. 重启 DSH
+4. 重启 DSH
 
 ## 升级
 
@@ -69,7 +67,6 @@ client 代码刷新页面即可。
 4. 删除 `<DSH_HOME>\plugins\dsh-agent-cockpit\state.json`（如保留目录）
 5. 重启 DSH
 
-内置引擎 `dsh-context-core` 只被本插件引用，可一并删除（`profiles\<profile>\node_modules\dsh-context-core`）。
 
 ## 排错
 

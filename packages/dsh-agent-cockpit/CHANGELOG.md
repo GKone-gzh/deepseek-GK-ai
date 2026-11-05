@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.1 (2026-11-05)
+
+- 修复 Windows PowerShell 5.1 下 `install.ps1` 因 UTF-8 无 BOM 被按 ANSI 解析、启动即报「字符串缺少终止符」的问题（脚本统一改为 UTF-8 BOM）。
+- `install.ps1` 检测到独立安装的 `dsh-context` 时，会先从 profile 的 `bundles`/`dependencies` 移除（备份 `package.json`），避免与本插件内置引擎重复注册。
+
 ## 1.4.0 (2026-11-04)
 
 - 新增 `preset-council` agent preset：新对话的模式下拉里出现「计划商讨模式」，选中后该会话由 `council-preset` 行注入商讨协议，并把工作台协作模式切到 council。

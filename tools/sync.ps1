@@ -1,4 +1,4 @@
-# 把仓库里的源码同步到已安装的运行位置（不重新登记 bundle）
+﻿# 把仓库里的源码同步到已安装的运行位置（不重新登记 bundle）
 #
 # 用法：
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools\sync.ps1

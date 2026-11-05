@@ -1,4 +1,4 @@
-# 发布到 GitHub（需要已安装 git + gh 并登录）
+﻿# 发布到 GitHub（需要已安装 git + gh 并登录）
 #
 #   winget install --id GitHub.cli -e
 #   gh auth login

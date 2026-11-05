@@ -1,4 +1,4 @@
-# 一键验收：宿主单测 + 客户端渲染冒烟 + 线上接口（需要 DSH 正在运行）
+﻿# 一键验收：宿主单测 + 客户端渲染冒烟 + 线上接口（需要 DSH 正在运行）
 #
 # 用法：
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify.ps1

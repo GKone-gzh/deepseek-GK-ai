@@ -1,4 +1,4 @@
-# GK协助工作台 · 一键安装（Windows / PowerShell）
+﻿# GK协助工作台 · 一键安装（Windows / PowerShell）
 #
 # 做四件事：
 #   1) 把 packages/dsh-agent-cockpit 复制到 <DSH_HOME>\plugins\dsh-agent-cockpit
@@ -44,7 +44,27 @@ $pkgPath = Join-Path $profileDir 'package.json'
 $pkg = Get-Content -LiteralPath $pkgPath -Raw | ConvertFrom-Json
 if (-not $pkg.dsh) { $pkg | Add-Member -NotePropertyName dsh -NotePropertyValue ([pscustomobject]@{}) }
 if (-not $pkg.dsh.profile) { $pkg.dsh | Add-Member -NotePropertyName profile -NotePropertyValue ([pscustomobject]@{}) }
+if (-not $pkg.dsh.profile.PSObject.Properties['bundles']) {
+  $pkg.dsh.profile | Add-Member -NotePropertyName bundles -NotePropertyValue @()
+}
 $bundles = @($pkg.dsh.profile.bundles)
+
+# 已安装独立 dsh-context 时先移除：它与本插件内置的 dsh-context-core 重复，
+# 同时加载会重复注册上下文页/路由，用户侧表现就是一堆重复标签或加载报错。
+if ($bundles -contains 'dsh-context') {
+  $conflictBackup = $pkgPath + '.bak-gk-conflict-' + (Get-Date -Format 'yyyyMMddHHmmss')
+  Copy-Item -LiteralPath $pkgPath -Destination $conflictBackup
+  $pkg.dsh.profile.bundles = @($bundles | Where-Object { $_ -ne 'dsh-context' })
+  if ($pkg.dependencies -and $pkg.dependencies.PSObject.Properties['dsh-context']) {
+    $pkg.dependencies.PSObject.Properties.Remove('dsh-context')
+  }
+  if ($pkg.dependencies -and -not $pkg.dependencies.PSObject.Properties.Count) {
+    $pkg.PSObject.Properties.Remove('dependencies')
+  }
+  $pkg | ConvertTo-Json -Depth 32 | Set-Content -LiteralPath $pkgPath -Encoding utf8
+  $bundles = @($pkg.dsh.profile.bundles)
+  Write-Host "检测到独立 dsh-context，已移除（备份: $conflictBackup）"
+}
 if ($bundles -notcontains 'dsh-agent-cockpit') {
   $backup = $pkgPath + '.bak-gk-install-' + (Get-Date -Format 'yyyyMMddHHmmss')
   Copy-Item -LiteralPath $pkgPath -Destination $backup

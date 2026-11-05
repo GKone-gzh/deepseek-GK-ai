@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.4.0-4f7cff" alt="version">
+  <img src="https://img.shields.io/badge/version-1.4.1-4f7cff" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-22c55e" alt="license">
   <img src="https://img.shields.io/badge/tests-13%2F13-22c55e" alt="tests">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20DeepSeek%20Harness-8b5cf6" alt="platform">
@@ -92,7 +92,7 @@ cd gk-assist-workbench
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
 ```
 
-脚本会：复制工作台到 `<DSH_HOME>\plugins\dsh-agent-cockpit`、复制上下文引擎到 profile 的 `node_modules`、登记 bundle、建立目录联接。完成后**重启 DSH**。
+脚本会：复制工作台到 `<DSH_HOME>\plugins\dsh-agent-cockpit`、复制上下文引擎到 profile 的 `node_modules`、登记 bundle、建立目录联接；如果 profile 里已经装了独立 `dsh-context`，会先移除它并备份 `package.json`，避免重复注册。完成后**重启 DSH**。
 
 手动安装、升级、卸载见 [docs/INSTALL.md](docs/INSTALL.md)。
 

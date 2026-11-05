@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-cockpit",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "type": "module",
   "description": "GK协助工作台：多智能体协助的会话级工作台——新对话「计划商讨模式」预设、计划商讨/询问/自动/关闭、预算熔断、本次任务成本、编队卡片、历史归档、首次加载插件冲突体检；内置上下文分析引擎。",

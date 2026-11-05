@@ -97,6 +97,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\install.ps1
 
 脚本会：复制工作台到 `<DSH_HOME>\plugins\dsh-agent-cockpit`、登记 bundle、建立目录联接。完成后**重启 DSH**。
 
+脚本会自动探测唯一的 DSH profile；卸载用 `powershell -File tools\uninstall.ps1`。
+
 手动安装、升级、卸载见 [docs/INSTALL.md](docs/INSTALL.md)。
 
 ## 用法

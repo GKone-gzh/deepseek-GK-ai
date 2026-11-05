@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6.4 (2026-11-05)
+
+- 修复英文界面残留中文：星图步数、上下文卡步数/总计等硬编码文案改用字典。
+- 任务板负责人改为中文部门名（与星图/分工计划一致），原始 spawn 名保留 tooltip。
+- 安装脚本支持自动探测唯一 profile，不再死认 desktop。
+- 新增 tools/uninstall.ps1：从 bundles 移除、删除 junction 与插件目录。
+
 ## 1.6.3 (2026-11-05)
 
 - 修复宿主插件未声明 inject：插件可能在 tools/systemPrompt 服务就绪前加载，导致 guard 与协作提示段静默缺失（coorddebug 显示 guard=false/prompt=false）。现在声明 webServer/sessions/agents/systemPrompt/tools，等就绪后再 apply。

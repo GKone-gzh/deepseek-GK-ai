@@ -61,11 +61,15 @@ client 代码刷新页面即可。
 
 ## 卸载
 
-1. **推荐**：在工作台冲突/设置里选「不使用我们的插件」，或手动从 profile `package.json` 的 `dsh.profile.bundles` 移除 `dsh-agent-cockpit`
-2. 删除目录联接：`profiles\<profile>\node_modules\dsh-agent-cockpit`
-3. 删除 `<DSH_HOME>\plugins\dsh-agent-cockpit`
-4. 删除 `<DSH_HOME>\plugins\dsh-agent-cockpit\state.json`（如保留目录）
-5. 重启 DSH
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\uninstall.ps1
+# 或指定 profile
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\uninstall.ps1 -Profile desktop
+```
+
+脚本会：从 bundles 移除 `dsh-agent-cockpit`（备份 `package.json`）、删除 profile 下的目录联接、删除 `<DSH_HOME>\plugins\dsh-agent-cockpit`。旧引擎目录只提示不自动删。
+
+完成后重启 DSH。
 
 
 ## 排错

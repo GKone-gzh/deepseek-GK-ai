@@ -22,7 +22,22 @@ $profileDir = Join-Path $DshHome "profiles\$Profile"
 foreach ($dir in @($pluginSrc)) {
   if (-not (Test-Path -LiteralPath $dir)) { throw "缺少源码目录: $dir" }
 }
-if (-not (Test-Path -LiteralPath $profileDir)) { throw "找不到 profile: $profileDir（确认 DSH 已安装并启动过）" }
+if (-not (Test-Path -LiteralPath $profileDir)) {
+  $candidates = @()
+  $profilesRoot = Join-Path $DshHome 'profiles'
+  if (Test-Path -LiteralPath $profilesRoot) {
+    $candidates = @(Get-ChildItem -LiteralPath $profilesRoot -Directory | Where-Object {
+      Test-Path -LiteralPath (Join-Path $_.FullName 'package.json')
+    })
+  }
+  if ($candidates.Count -eq 1) {
+    $Profile = $candidates[0].Name
+    $profileDir = $candidates[0].FullName
+    Write-Host "未找到 desktop，自动使用 profile: $Profile"
+  } else {
+    throw "找不到 profile: $profileDir（用 -Profile <名字> 指定，现有: $($candidates.Name -join ', ')）"
+  }
+}
 
 $pluginDst = Join-Path $DshHome 'plugins\dsh-agent-cockpit'
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $pluginDst) | Out-Null

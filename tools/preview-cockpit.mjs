@@ -74,6 +74,7 @@ const family = {
 let captured = null;
 globalThis.window = { __ModuleLoader__: { load(entry) { captured = entry; } } };
 const store = new Map();
+if (process.env.GK_PREVIEW_LANG === 'en') store.set('agent-cockpit:lang', 'en');
 globalThis.localStorage = {
   getItem(key) { return store.has(key) ? store.get(key) : null; },
   setItem(key, value) { store.set(key, String(value)); },

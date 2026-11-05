@@ -358,6 +358,7 @@ window.__ModuleLoader__.load({
       ctxConsumed: '消耗',
       ctxDuration: '用时',
       ctxReread: '重读',
+      ctxTotal: '总计',
       terrainTitle: '上下文地形',
       terrainHint: '每根柱子是一个 Agent 的上下文构成，按总量从高到低；柱顶数字是计量 token。',
       terrainLegendRead: '重读',
@@ -460,7 +461,7 @@ window.__ModuleLoader__.load({
       archivedGroup: '已归档',
       restoreArchived: '恢复归档',
       archivedHint: '归档只影响工作台展示（历史团队不再占编队卡片），不删除会话。',
-      versionNote: 'GK协助工作台 v1.6.3 · 协作星图 / 上下文用量 / 计划商讨 / 预算熔断',
+      versionNote: 'GK协助工作台 v1.6.4 · 协作星图 / 上下文用量 / 计划商讨 / 预算熔断',
     };
 
     const en = {
@@ -552,6 +553,7 @@ window.__ModuleLoader__.load({
       ctxConsumed: 'consumed',
       ctxDuration: 'time',
       ctxReread: 'reread',
+      ctxTotal: 'total',
       terrainTitle: 'Context terrain',
       terrainHint: 'One column per agent, sorted by total context tokens.',
       terrainLegendRead: 'reread',
@@ -654,7 +656,7 @@ window.__ModuleLoader__.load({
       archivedGroup: 'Archived',
       restoreArchived: 'Restore',
       archivedHint: 'Archiving only hides cards here (old teams stop occupying the fleet); sessions are not deleted.',
-      versionNote: 'GK Workbench v1.6.3 · collaboration map / context usage / council preset',
+      versionNote: 'GK Workbench v1.6.4 · collaboration map / context usage / council preset',
     };
 
     /* ── small shared helpers ───────────────────────────────────────────── */
@@ -1267,7 +1269,7 @@ window.__ModuleLoader__.load({
           ]),
           h('div', { className: 'acp_ctxBar', key: 'bar' }, h('i', { style: { width: share + '%' } })),
           h('div', { className: 'acp_ctxFoot', key: 'foot' }, [
-            h('span', { key: 'steps' }, String(Number((x.row.usage || {}).steps) || 0) + ' 步'),
+            h('span', { key: 'steps' }, String(Number((x.row.usage || {}).steps) || 0) + ' ' + t('colSteps')),
             h('span', { key: 'read' }, t('ctxReread') + ' ' + (x.total > 0 ? Math.round((x.read / x.total) * 100) : 0) + '%'),
           ]),
         ]);
@@ -1279,7 +1281,7 @@ window.__ModuleLoader__.load({
             h('p', { className: 'acp_hint', key: 'hint', style: { margin: '2px 0 0' } }, t('ctxHint')),
           ]),
           h('div', { className: 'acp_ctxBadges', key: 'badges' }, [
-            h('span', { className: 'acp_ctxBadge', key: 'total' }, fmtTokens(sumTotal) + ' total'),
+            h('span', { className: 'acp_ctxBadge', key: 'total' }, fmtTokens(sumTotal) + ' ' + t('ctxTotal')),
             h('span', { className: 'acp_ctxBadge acp_ctxBadgeRead', key: 'read' }, String(pressure) + '% ' + t('pulsePressure')),
           ]),
         ]),
@@ -1365,10 +1367,9 @@ window.__ModuleLoader__.load({
           h('span', { className: 'acp_graphHeadRow', key: 'head' }, [
             h('span', { className: 'acp_graphDot ' + (isRunningRow(r) ? 'acp_dotRun' : 'acp_dotIdle'), key: 'dot' }),
             h('span', { className: 'acp_graphName', key: 'name', title: String(r.name) }, String(props.displayName ? props.displayName(r) : r.name)),
-            r.role === 'lead' ? h('span', { className: 'acp_graphRole', key: 'role' }, 'LEAD') : null,
           ]),
           h('span', { className: 'acp_graphTask', key: 'task' }, task ? String(task.subject) : (r.description ? String(r.description) : t('noTask'))),
-          h('span', { className: 'acp_graphStats', key: 'stats' }, String(steps) + ' 步 · ' + fmtTokens(total)),
+          h('span', { className: 'acp_graphStats', key: 'stats' }, String(steps) + ' ' + t('colSteps') + ' · ' + fmtTokens(total)),
           h('span', { className: 'acp_graphBar', key: 'bar' }, h('i', { style: { width: pct + '%' } })),
         ]);
       });
@@ -1572,7 +1573,7 @@ window.__ModuleLoader__.load({
       const t = props.t;
       const critical = props.critical === true;
       const meta = [];
-      meta.push(h('span', { className: 'acp_metaItem', key: 'owner' }, t('owner') + ': ' + (task.ownerName !== undefined ? task.ownerName : t('unowned'))));
+      meta.push(h('span', { className: 'acp_metaItem', key: 'owner' }, t('owner') + ': ' + (task.ownerName !== undefined ? (typeof props.ownerDisplay === 'function' ? props.ownerDisplay(task.ownerName) : task.ownerName) : t('unowned'))));
       if (task.status === 'pending') {
         meta.push(h('span', {
           className: 'acp_metaItem ' + (task.ready === false ? 'acp_warn' : 'acp_ok'),
@@ -1755,6 +1756,7 @@ window.__ModuleLoader__.load({
           critical: props.criticalIds !== undefined && props.criticalIds !== null
             ? props.criticalIds.has(String(task.id))
             : false,
+          ownerDisplay: props.ownerDisplay,
         })),
       ]);
     }
@@ -2290,6 +2292,11 @@ window.__ModuleLoader__.load({
       const familyTotals = family.data && family.data.totals ? family.data.totals : undefined;
       const familyRatio = family.data && typeof family.data.ratio === 'number' ? family.data.ratio : 0;
       const critical = criticalPathOf(tasks);
+      const ownerDept = departmentNames(familyReady ? visibleFamilyRows : []);
+      const deptByRealName = new Map();
+      (familyReady ? visibleFamilyRows : []).forEach((row) => deptByRealName.set(String(row.name), ownerDept.get(String(row.id)) || String(row.name)));
+      const ownerDisplay = (name) => deptByRealName.get(String(name)) || String(name);
+
       const activeCount = familyReady
         ? activeRows.length
         : members.filter((member) => isRunningRow(member)).length;
@@ -2442,9 +2449,9 @@ window.__ModuleLoader__.load({
               : null,
           ]),
           h('div', { className: 'acp_board', key: 'board' }, [
-            h(BoardColumn, { key: 'pending', id: 'pending', title: t('pending'), dotClass: 'acp_dot acp_dotIdle', tasks: pendingTasks, t, criticalIds: critical.ids }),
-            h(BoardColumn, { key: 'in_progress', id: 'in_progress', title: t('in_progress'), dotClass: 'acp_dot acp_dotWait', tasks: inProgressTasks, t, criticalIds: critical.ids }),
-            h(BoardColumn, { key: 'completed', id: 'completed', title: t('completed'), dotClass: 'acp_dot acp_dotRun', tasks: completedTasks, t, criticalIds: critical.ids }),
+            h(BoardColumn, { key: 'pending', id: 'pending', title: t('pending'), dotClass: 'acp_dot acp_dotIdle', tasks: pendingTasks, t, criticalIds: critical.ids, ownerDisplay }),
+            h(BoardColumn, { key: 'in_progress', id: 'in_progress', title: t('in_progress'), dotClass: 'acp_dot acp_dotWait', tasks: inProgressTasks, t, criticalIds: critical.ids, ownerDisplay }),
+            h(BoardColumn, { key: 'completed', id: 'completed', title: t('completed'), dotClass: 'acp_dot acp_dotRun', tasks: completedTasks, t, criticalIds: critical.ids, ownerDisplay }),
           ]),
         ]));
       }
